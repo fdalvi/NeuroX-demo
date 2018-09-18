@@ -1,2 +1,8 @@
 test_data/
 *__pycache__
+
+# Node Modules
+src/node_modules
+
+# Built files
+src/client/dist/
