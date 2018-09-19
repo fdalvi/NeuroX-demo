@@ -9,8 +9,8 @@ import "./css/vis_elements.css";
 import '@material/react-button/index.scss';
 import Button from '@material/react-button';
 
-import '@material/react-select/index.scss';
-import Select from '@material/react-select';
+import "@material/select/mdc-select";
+import {MDCSelect} from '@material/select';
 
 class Token extends React.Component {
 	constructor(props) {
@@ -21,8 +21,8 @@ class Token extends React.Component {
 		let style = {}
 		if (this.props.activation != undefined) {
 			let color  = this.props.activation > 0 ? "rgba(255, 0, 0," : "rgba(0, 0, 255,";
-        	// square-root gives better color contrasts
-        	style = {backgroundColor: color + Math.abs(this.props.activation) ** .5 + ")"};
+			// square-root gives better color contrasts
+			style = {backgroundColor: color + Math.abs(this.props.activation) ** .5 + ")"};
 		}
 		return (
 			<span className={"token"} style={style}>
@@ -119,29 +119,97 @@ class NeuronInformation extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {selectedIdx: 0};
+		this.state = {
+			selectedIdx: 0,
+			neuron_information: undefined
+		};
+
+		this.select = undefined;
+
+		this.loadNeuronInformation = this.loadNeuronInformation.bind(this);
+	}
+
+	loadNeuronInformation(project_id, neuron) {
+		let self = this;
+		let xhr = new XMLHttpRequest();
+		xhr.open("POST", "/getTopWords", true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(JSON.stringify({
+			'project_id': project_id,
+			'neuron': neuron
+		}))
+
+		xhr.onload = function(e) {
+			let response =  JSON.parse(xhr.response);
+			self.setState({
+				neuron_information: response
+			})
+		}
+	}
+
+	componentDidMount() {
+		let self = this;
+		this.select = new MDCSelect(document.querySelector('.mdc-select'));
+		this.select.listen('change', () => this.loadNeuronInformation(this.props.project_id, self.props.neurons[self.select.value]));
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.neurons !== prevProps.neurons) {
+			let neuron = this.props.neurons[this.select.value];
+			if (neuron != undefined) {
+				if (this.state.neuron_information != undefined &&
+					neuron != this.state.neuron_information.neuron) {
+					this.loadNeuronInformation(this.props.project_id, neuron)
+				}
+			}
+		}
 	}
 
 	render() {
+		let messageClassNames = "mdc-typography--body1"
+		let contentClassNames = ""
 		if (this.props.neurons.length == 0) {
-			return (
-				<div id="neuron-list" 
-					className="mdc-typography--body1"
+			contentClassNames = "hidden";
+		} else {
+			messageClassNames = "hidden";
+		}
+
+		let information_div = "";
+		let neuron_information= this.state.neuron_information;
+		if (neuron_information != undefined) {
+			information_div = <div id="neuron-specific-info">
+				<span className="mdc-typography--caption"> Mean: </span>
+				<span className="mdc-typography--body1">{Number.parseFloat(neuron_information.mean).toFixed(3)} </span>
+				<span className="mdc-typography--caption"> Standard Deviation: </span>
+				<span className="mdc-typography--body1"> {Number.parseFloat(neuron_information.std).toFixed(3)} </span>
+
+				<span className="mdc-typography--caption"> Top words: </span>
+				{neuron_information.top_words.map(x => <Token token={x.token} activation={x.activation}/>)}
+			</div>
+		}
+
+		return (
+			<div id="neuron-list">
+				<div className={messageClassNames}
 					style={{marginLeft: '10px', color: '#555'}}>
 					Select at least one neuron
 				</div>
-			);
-		} else {
-			return (
-				<div id="neuron-list">
-					<Select label='Choose Neuron' value={this.state.selectedIdx} outlined={true} onChange={(evt) => this.setState({selectedIdx: evt.target.value})}>
-						<option value='' disabled>Choose Neuron</option>
-
-						{this.props.neurons.map((x,idx) => <option value={idx}>Neuron {x}</option>)}
-					</Select>
+				<div style={{width: "100%"}} className={contentClassNames}>
+					<div style={{width: "100%"}} class="mdc-select mdc-select--outlined">
+						<select class="mdc-select__native-control">
+							<option value="" disabled selected></option>
+							{this.props.neurons.map((x,idx) => <option value={idx}>Neuron {x}</option>)}
+						</select>
+						<label class="mdc-floating-label">Choose a Neuron</label>
+						<div class="mdc-notched-outline">
+							<svg> <path class="mdc-notched-outline__path"></path> </svg>
+						</div>
+						<div class="mdc-notched-outline__idle"></div>
+					</div>
+					{information_div}
 				</div>
-			);
-		}
+			</div>
+		);
 	}	
 }
 
@@ -180,11 +248,11 @@ class ActivationsMap extends React.Component {
 		this.loadActivations(this.props.project_id, this.props.selected_neurons)
 	}
 
- 	componentDidUpdate(prevProps) {
-    	if (this.props.selected_neurons !== prevProps.selected_neurons) {
-      		this.loadActivations(this.props.project_id, this.props.selected_neurons)
-    	}
-  	}
+	componentDidUpdate(prevProps) {
+		if (this.props.selected_neurons !== prevProps.selected_neurons) {
+			this.loadActivations(this.props.project_id, this.props.selected_neurons)
+		}
+	}
 
 	render() {
 		let processed_neurons = this.state.activations.map(x => x.neuron)
@@ -309,8 +377,6 @@ class Analysis extends React.Component {
 		} else {
 			new_selected_neurons = update(selected_neurons, {$push: [neuron]});
 		}
-
-		console.log(new_selected_neurons)
 		
 		this.setState({'selected_neurons': new_selected_neurons});
 	}
@@ -391,7 +457,7 @@ class Analysis extends React.Component {
 							className="mdc-typography--button">
 							Neuron Information
 						</h1>
-						<NeuronInformation neurons={this.state.selected_neurons}/>
+						<NeuronInformation project_id={this.props.project_id} neurons={this.state.selected_neurons}/>
 					</div>
 				</div>
 			</div>

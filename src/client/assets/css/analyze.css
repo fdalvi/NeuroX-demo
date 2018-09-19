@@ -156,3 +156,12 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+.hidden {
+    display: none;
+}
+
+#neuron-specific-info {
+    display: flex;
+    flex-direction: column;
+}

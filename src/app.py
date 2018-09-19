@@ -68,12 +68,20 @@ def load_session_data(project_id):
 	raw_activations_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/' + \
 		model_path.split('/')[-1] + '_' + text_path.split('/')[-1] + '.pt'
 	activations = torch.load(raw_activations_path)
-	# activations = None
+
 	print("Normalizing activations...")
 	norm = max(abs(value) for value in flatten(activations))
 	norm_activations = listify(activations, norm=norm)
+
+	print("Flattening activations...")
+	activations = listify(activations, norm=1)
+	activations = [np.array([[neurons for layer in token for neurons in layer] for token in sent]) for sent in activations]
 	norm_activations = [np.array([[neurons for layer in token for neurons in layer] for token in sent]) for sent in norm_activations]
-	# norm_activations = None
+
+	print("Computing Statistics...")
+	activations = np.concatenate(activations)
+	means = np.mean(activations, axis=0)
+	stds = np.std(activations, axis=0)
 
 	print("Loading source text...")
 	source_path = text_path
@@ -81,6 +89,13 @@ def load_session_data(project_id):
 	with open(source_path) as fp:
 		for line in fp:
 			source_text.append(line.strip().split(' '))
+
+	print("Loading source tokens...")
+	source_tokens = [t for s in source_text for t in s]
+
+	if len(source_tokens) != activations.shape[0]:
+		print("[WARNING] Mismatch in number of tokens and activations")
+		print("[WARNING] Activation Maps and Top Words may be corrupted")
 
 	print("Loading predictions...")
 	pred_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_outputs/' + \
@@ -125,15 +140,17 @@ def load_session_data(project_id):
 	sessions[project_id] = {
 		'activations': activations,
 		'norm_activations': norm_activations,
+		'means': means,
+		'stds': stds,
 		'source_text': source_text,
 		'pred_text': pred_text,
-		'rankings': rankings
+		'rankings': rankings,
+		'source_tokens': source_tokens
 	}
 
 # a route where we will display a welcome message via an HTML template
 @app.route("/")
-def index():  
-	message = "Hello, World"
+def index():
 	return render_template('index.html')#, message=message)
 
 @app.route("/analyze")
@@ -200,6 +217,50 @@ def get_activations():
 		return jsonify({
 			'success': True,
 			'activations': filtered_activations
+		})
+
+@app.route("/getTopWords", methods=["POST"])
+def get_top_words():
+	SMOOTHING_FACTOR = 4
+
+	project_id = request.json['project_id']
+	neuron = int(request.json['neuron'])
+
+	if project_id not in sessions:
+		return jsonify({'success': False})
+	else:
+		project_data = sessions[project_id]
+		activations = project_data['activations']
+		tokens = project_data['source_tokens']
+		mean = project_data['means'][neuron]
+		std = project_data['stds'][neuron]
+
+		individual_token_sums = {}
+		individual_token_counts = {}
+		for i, token_acts in enumerate(activations):
+			token_act = token_acts[neuron]
+			if tokens[i] not in individual_token_sums:
+				individual_token_sums[tokens[i]] = 0
+				individual_token_counts[tokens[i]] = 0
+			individual_token_sums[tokens[i]] += (token_act - mean)/std
+			individual_token_counts[tokens[i]] += 1
+
+		for k in individual_token_sums:
+			individual_token_sums[k] /= (individual_token_counts[k] + SMOOTHING_FACTOR)
+
+		sorted_a = sorted(individual_token_sums, key=lambda k:abs(individual_token_sums[k]), reverse=True)
+		top_words = sorted_a[:20]
+		top_acts = [individual_token_sums[t] for t in top_words]
+		norm = max([abs(a) for a in top_acts]) * 3 # arbitrary value, come up with better way
+		top_acts = [t/norm for t in top_acts]
+
+		top_results = [{'token': top_words[i], 'activation': top_acts[i]} for i in range(len(top_words))]
+
+		return jsonify({
+			'neuron': neuron,
+			'mean': mean,
+			'std': std,
+			'top_words': top_results
 		})
 
 # run the application
