@@ -84,7 +84,8 @@ var config = {
 				}
 			}
 		})
-  	]
+  	],
+  	mode: 'production'
 };
 
 module.exports = config;

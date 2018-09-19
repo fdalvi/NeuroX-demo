@@ -1,0 +1,158 @@
+body {
+    margin: 0px;
+}
+
+#app {
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-height: 100vh;
+}
+
+.dark-icon {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white; 
+}
+
+/*********************************** HEADER ***********************************/
+#page-header {
+    height: 64px;
+    background-color: #eee;
+    padding: 5px 25px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+#page-header > h1 {
+    flex-grow: 2;
+}
+
+#page-header > Button {
+    margin: 10px;
+}
+
+#page-content {
+    flex-grow: 2;
+
+    height: calc(100vh - 80px);
+}
+
+#top-row {
+    display: flex;
+    flex-direction: row;
+
+    height: 30%;
+}
+
+#bottom-row {
+    display: flex;
+    flex-direction: row;
+
+    height: 70%;
+}
+
+#sentences-container {
+    width: 80%;
+    height: calc(100% - 20px);
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: scroll;
+}
+
+#rankings-container {
+    width: 20%;
+    height: calc(100% - 20px);
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: scroll;
+}
+
+#results-container {
+    width: 80%;
+    height: calc(100% - 20px);
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: scroll;
+}
+
+#neurons-container {
+    width: calc(10% - 11px);
+    height: calc(100% - 20px);
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: scroll;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#neuron-info-container {
+    width: calc(10% - 11px);
+    height: calc(100% - 20px);
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: scroll;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.ranking-selected {
+    background-color: #e1cbff;
+}
+
+.ranking-item {
+    font-family: Roboto;
+    font-size: 1rem;
+    margin: 0px 10px 0px 10px;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 10px;
+}
+
+.ranking-item:hover {
+    background-color: #eee;
+}
+
+.sub-ranking-item {
+    font-family: Roboto;
+    font-size: 1rem;
+    margin: 0px 10px 0px 10px;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 10px;
+
+    margin-left: 30px;
+}
+
+.sub-ranking-item:hover {
+    background-color: #eee;
+}
+
+#neuron-list {
+    display: flex;
+    flex-direction: column;
+}

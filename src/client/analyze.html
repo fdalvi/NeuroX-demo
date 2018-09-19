@@ -2,13 +2,17 @@
 <html lang="en-US">
 	<head>
 		<meta charset="UTF-8">
-		<title>Home Page</title>
+		<title> Neuron Analysis </title>
 
-		<!-- <link rel="stylesheet" type="text/css" href="/css/sample.css"> -->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link href="https://fonts.googleapis.com/css?family=Roboto:400,900" rel="stylesheet">
 	</head>
 	<body>
 		<div id="app"></div>
 
+		<script type="text/javascript">
+			var project_info = {{ project_info|tojson }};
+		</script>
 		<script src="/dist/vendor.js"></script>
 		<script src="/dist/analyze.js"></script>
 	</body>

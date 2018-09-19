@@ -118,16 +118,24 @@ class App extends React.Component {
 		};
 
 		this.handleProjectSelect = this.handleProjectSelect.bind(this);
+		this.handleProjectCreate = this.handleProjectCreate.bind(this);
 	}
 
 	handleProjectSelect(index) {
 		this.setState({selectedIndex: index});
 	}
 
+	handleProjectCreate() {
+		let project_id = "4e763af331"
+		window.location.href = "/analyze?project=" + project_id
+	}
+
 	render () {
 		let project_info_elem = <div id="project-info-container">
 									<NewProject/>
-									<Button raised={true}> Create new project </Button>
+									<Button raised={true} onClick={this.handleProjectCreate}>
+										Create new project
+										</Button>
 								</div>
 		if (this.state.selectedIndex > -1) {
 			project_info_elem = <div id="project-info-container">
