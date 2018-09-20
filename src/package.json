@@ -10,7 +10,9 @@
   "author": "Fahim Dalvi",
   "license": "ISC",
   "dependencies": {
+    "@material/checkbox": "^0.39.3",
     "@material/dialog": "^0.39.3",
+    "@material/form-field": "^0.39.3",
     "@material/linear-progress": "^0.39.1",
     "@material/list": "^0.39.3",
     "@material/react-button": "^0.4.2",
@@ -21,9 +23,11 @@
     "@material/ripple": "^0.39.3",
     "@material/select": "^0.39.3",
     "@material/typography": "^0.39.0",
+    "chart.js": "^1.1.1",
     "immutability-helper": "^2.8.1",
     "react": "^16.5.1",
     "react-addons-css-transition-group": "^15.6.2",
+    "react-chartjs": "^1.2.0",
     "react-dom": "^16.5.1",
     "remove": "^0.1.5"
   },

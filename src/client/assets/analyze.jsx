@@ -15,6 +15,13 @@ import {MDCSelect} from '@material/select';
 import "@material/linear-progress/mdc-linear-progress";
 import {MDCLinearProgress} from '@material/linear-progress';
 
+import "@material/form-field/mdc-form-field";
+import {MDCFormField} from '@material/form-field';
+import "@material/checkbox/mdc-checkbox";
+import {MDCCheckbox} from '@material/checkbox';
+
+import {Line} from "react-chartjs";
+
 class Token extends React.Component {
 	constructor(props) {
 		super(props);
@@ -469,15 +476,269 @@ class Analysis extends React.Component {
 }
 
 
-class Ablation extends React.Component {
+class AblationResults extends React.Component {
 	constructor(props) {
-		super(props);
+		super(props)
+		this.mockdata = [
+				{
+					label: "Cross-Model Correlation Bottom",
+					fillColor: "rgba(151,187,205,0.2)",
+					strokeColor: "rgba(151,187,205,1)",
+					pointColor: "rgba(151,187,205,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(151,187,205,1)",
+					data: [34.75,34.43,33.43,32.32,30.79,28.8,26.4,23.61,20.57,17.16,14.08,11.27,9.28,7.53,6.15,5.03,4.15,3.42,3.1,2.76,2.43,2.14,2.01,1.9,1.74,1.5,1.23,1.04,0.96,0.81,0.8,0.45,0.14,0.01,0,0,0,0,0,0,0]
+				},
+				{
+					label: "Cross-Model Correlation Top",
+					fillColor: "rgba(255,255,255,0.5)",
+					strokeColor: "rgba(220,220,220,1)",
+					pointColor: "rgba(220,220,220,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(220,220,220,1)",
+					data: [34.75,19.82,16.48,14.21,11.46,10.57,9.33,8.38,7.62,6.13,5.22,4.72,4,3.6,3.55,2.9,2.52,1.98,1.93,1.6,1.36,0.69,0.47,0.49,0.14,0.09,0.06,0.04,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				},
+				{
+					label: "Task-Specific (POS) Ranking Top",
+					fillColor: "rgba(151,187,205,0.0)",
+					strokeColor: "rgba(255,137,79,1)",
+					pointColor: "rgba(255, 102, 25,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(255, 102, 25	,1)",
+					data: [34.75,33.69,31.69,30.1,27.74,24.05,19.77,16.3,13.53,11.08,8.65,6.66,5.52,4.43,3.39,2.47,2.12,2.22,1.52,1.36,1.16,1.1,0.65,0.48,0.33,0.05,0.01,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+				},
+				{
+					label: "Task-Specific (SEM) Ranking Top",
+					fillColor: "rgba(151,187,205,0.0)",
+					strokeColor: "rgba(116, 200, 103,1)",
+					pointColor: "rgba(40, 201, 14,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(151,187,205,1)",
+					data: [34.75,33.3,31.01,27.7,24.36,20.3,15.83,12.08,9.56,7.54,5.75,4.73,4,3.32,2.88,2.64,2.45,2.33,2.14,1.9,1.64,1.44,1.34,1.34,1.17,0.95,0.91,1.09,0.93,0.62,0.64,0.06,0.09,0.01,0,0,0,0,0,0,0]
+				},
+			]
+	}
+
+	render() {
+		console.log(this.props.selected_rankings);
+		if (this.props.selected_rankings.length == 0) {
+			return (
+				<div
+						className="mdc-typography--body1"
+						style={{marginLeft: '10px', color: '#555'}}>
+						Select at least one ranking to visualize the ablation results
+				</div>
+			);
+		} else {
+			let datasets = []
+			for (var i = 0; i < this.props.selected_rankings.length; i++) {
+				datasets.push(this.mockdata[i])
+			}
+			var data = {
+				labels : [0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500,1550,1600,1650,1700,1750,1800,1850,1900,1950,2000],
+				datasets: datasets
+			};
+			return (
+				<div class="chart-container" style={{position: 'relative', height:'50%', width:'80%'}}>
+					<Line data={data} options={{responsive: true}} redraw/>
+				</div>
+			);
+		}
+	}
+}
+
+class Checkbox extends React.Component {
+	constructor(props) {
+		super(props)
+
+		this.checkbox = undefined;
+	}
+
+	componentDidMount() {
+		this.checkbox = new MDCCheckbox(document.querySelector("#checkbox-" + this.props.id));
+		const formField = new MDCFormField(document.querySelector("#formfield-" + this.props.id));
+		formField.input = this.checkbox;
 	}
 
 	render() {
 		return (
-			<div>
-			Ablation
+			<div id={"formfield-" + this.props.id} class="mdc-form-field">
+				<div id={"checkbox-" + this.props.id} class="mdc-checkbox">
+				    <input type="checkbox"
+				           class="mdc-checkbox__native-control"
+				           id={"checkbox-input-"+ this.props.id}
+				           onClick={() => this.props.onClick(this.props.id, this.checkbox.checked)}/>
+				    <div class="mdc-checkbox__background">
+				      <svg class="mdc-checkbox__checkmark"
+				           viewBox="0 0 24 24">
+				        <path class="mdc-checkbox__checkmark-path"
+				              fill="none"
+				              d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+				      </svg>
+				      <div class="mdc-checkbox__mixedmark"></div>
+				    </div>
+				  </div>
+				  <label for={"checkbox-input-"+ this.props.id}>{this.props.label}</label>
+			</div>
+		)
+	}
+}
+
+
+class Ablation extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			'sentences': [],
+			'rankings': [],
+			'selected_rankings': []
+		}
+
+		this.handleRankingSelect = this.handleRankingSelect.bind(this);
+	}
+
+	componentDidMount() {
+		let self = this;
+
+		let xhr = new XMLHttpRequest();
+		xhr.open("POST", "/getText", true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(JSON.stringify({
+			'project_id': this.props.project_id
+		}))
+
+		xhr.onload = function(e) {
+			let response =  JSON.parse(xhr.response);
+			let source = response['source'];
+			let pred = response['pred'];
+
+			let sentences = []
+			for (var i = 0; i < source.length; i++) {
+				sentences.push({
+					'source': source[i],
+					'pred': pred[i]
+				})
+			}
+
+			self.setState({
+				'sentences': sentences
+			})
+		}
+
+		let xhr_rankings = new XMLHttpRequest();
+		xhr_rankings.open("POST", "/getRankings", true);
+		xhr_rankings.setRequestHeader('Content-Type', 'application/json');
+		xhr_rankings.send(JSON.stringify({
+			'project_id': this.props.project_id
+		}))
+
+		xhr_rankings.onload = function(e) {
+			let response =  JSON.parse(xhr_rankings.response);
+			let flat_rankings = []
+			for (var i = 0; i < response['rankings'].length; i++) {
+				response['rankings'][i].level = 1;
+				flat_rankings.push(response['rankings'][i])
+				if (response['rankings'][i].sub_rankings != undefined) {
+					for (var j = 0; j < response['rankings'][i].sub_rankings.length; j++) {
+						response['rankings'][i].sub_rankings[j].level = 2;
+						flat_rankings.push(response['rankings'][i].sub_rankings[j])
+					}
+				}
+			}
+
+			self.setState({
+				'rankings': flat_rankings
+			})
+		}
+	}
+
+	handleRankingSelect(checkboxID, selected) {
+		let index = checkboxID.split('-')[0];
+		let direction = checkboxID.split('-')[1];
+		let selected_rankings = this.state.selected_rankings;
+		if (selected) {
+			selected_rankings = update(selected_rankings, {$push: [checkboxID]})
+		} else {
+			selected_rankings = update(selected_rankings, {$splice: [[selected_rankings.indexOf(checkboxID), 1]]});
+		}
+		this.setState({'selected_rankings': selected_rankings});
+	}
+
+	render() {
+		let sentences = [];
+
+		for (var i = 0; i < this.state.sentences.length; i++) {
+			sentences.push(
+				<div style={{margin: '7px', borderBottom: '1px dashed #ccc'}}>
+					<Sentence name="source" tokens={this.state.sentences[i].source} />
+					<Sentence name="translation" tokens={this.state.sentences[i].pred} />
+				</div>
+			)
+		}
+
+		let rankings = []
+		for (let i = 0; i < this.state.rankings.length; i++) {
+			let ranking = this.state.rankings[i];
+			let ranking_classes = ""
+
+			if (ranking.level == 1) {
+				ranking_classes += "ranking-item ";
+				if (i == this.state.selected_ranking) {
+					ranking_classes += "ranking-selected";
+				}
+
+				rankings.push(
+					<div className={ranking_classes} style={{display: 'flex', flexDirection: 'column'}}>
+						{ranking.name}
+						<span>
+							<Checkbox id={i + "-top"} label="Top" onClick={this.handleRankingSelect}/>
+							<Checkbox id={i + "-bottom"} label="Bottom" onClick={this.handleRankingSelect}/>
+						</span>
+					</div>
+				)
+			} else {
+				// Ignore subrankings for ablation
+			}
+		}
+
+		let neurons = []
+		if (this.state.selected_ranking > -1) {
+			neurons = this.state.rankings[this.state.selected_ranking].ranking;
+		}
+		return (
+			<div id="page-content">
+				<div id="top-row">
+					<div id="sentences-container" style={{width: '100%'}}>
+						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
+							className="mdc-typography--button">
+							Translations
+						</h1>
+						{sentences}
+					</div>
+				</div>
+				<div id="bottom-row">
+					<div id="results-container">
+						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
+							className="mdc-typography--button">
+							Ablation Results
+						</h1>
+						<div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
+						<AblationResults rankings={this.state.rankings} selected_rankings={this.state.selected_rankings}/>
+						</div>
+					</div>
+					<div id="rankings-container">
+						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
+							className="mdc-typography--button">
+							Rankings
+						</h1>
+						{rankings}
+					</div>
+				</div>
 			</div>
 			)
 	}
@@ -539,9 +800,9 @@ class App extends React.Component {
 			let main_content = <Analysis project_id={this.state.project_info.id}/>
 
 			if (this.state.active_mode == 'ablation')
-				main_content = <Ablation/>;
+				main_content = <Ablation project_id={this.state.project_info.id}/>;
 			if (this.state.active_mode == 'manipulation')
-				main_content = <Manipulation/>;
+				main_content = <Manipulation project_id={this.state.project_info.id}/>;
 
 			return (
 				<div id="container">
