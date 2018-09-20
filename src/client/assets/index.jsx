@@ -329,12 +329,16 @@ class App extends React.Component {
 	}
 
 	render () {
-		let project_info_elem = <div id="project-info-container">
-									<NewProject/>
-									<Button raised={true} onClick={this.handleProjectCreate}>
-										Create new project
-										</Button>
-								</div>
+		let project_info_elem = (
+			<div id="project-info-container">
+				<NewProject/>
+				<div style={{display: 'flex', justifyContent: 'flex-end'}}>
+					<Button raised={true} onClick={this.handleProjectCreate}>
+						Create new project
+					</Button>
+				</div>
+			</div>
+		)
 		if (this.state.selectedIndex > -1) {
 			project_info_elem = <div id="project-info-container">
 				<h1 className="mdc-typography--headline5">{this.state.projects[this.state.selectedIndex].name}</h1>
