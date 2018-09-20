@@ -31,12 +31,24 @@ class NewProject extends React.Component {
 			rankingName: '',
 			crossModelPaths: '',
 			taskSpecificTokensPath: '',
-			taskSpecificLabelsPath: '',
+			taskSpecificLabelsPath: ''
 		}
 
 		this.handleAddRanking = this.handleAddRanking.bind(this);
+		this.resetDialog = this.resetDialog.bind(this);
 		this.dialog = undefined;
 		this.select = undefined;
+	}
+
+	resetDialog() {
+		this.select.selectedIndex = -1;
+		this.setState({
+			'current_ranking_type': this.select.value,
+			'rankingName': '',
+			'crossModelPaths': '',
+			'taskSpecificTokensPath': '',
+			'taskSpecificLabelsPath': ''
+		});
 	}
 
 	componentDidMount() {
@@ -60,20 +72,21 @@ class NewProject extends React.Component {
 			} else if(self.state.current_ranking_type == "variance") {
 			} else if(self.state.current_ranking_type == "mean") {
 			}
+			self.resetDialog();
 		})
 
 		this.dialog.listen('MDCDialog:cancel', function() {
-			// do nothing
+			self.resetDialog();
 		})
 
 		this.select.listen('change', function() {
 			let defaultRankingName = ""
 			if (self.select.value == "cross-model") {
-				defaultRankingName = "Cross-Model ranking"
+				defaultRankingName = "Cross-Model Correlation"
 			} else if (self.select.value == "task-specific") {
-				defaultRankingName = "Task-Specific ranking"
+				defaultRankingName = "Task-Specific Ranking"
 			} else if (self.select.value == "univariate") {
-				defaultRankingName = "Univariate Feature selection"
+				defaultRankingName = "Univariate Feature Selection"
 			}
 			self.setState({
 				'current_ranking_type': self.select.value,
@@ -300,11 +313,11 @@ class App extends React.Component {
 		this.state = {
 			projects: [
 				{
-					name: "English-Arabic bidirectonal model",
+					name: "English-Arabic bidirectional model",
 					date: "9 September, 2018"
 				},
 				{
-					name: "English-Spanish bidirectonal model",
+					name: "English-Spanish 2 Layer",
 					date: "2 September, 2018"
 				},
 				{

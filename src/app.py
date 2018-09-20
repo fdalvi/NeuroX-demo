@@ -43,13 +43,13 @@ database = {
 		'rankings': [
 			{
 				'type': 'cross-model correlation',
-				'name': 'Cross-Correlation',
+				'name': 'Cross-Model Correlation',
 				'models': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-2.pt,/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-3.pt',
 				'text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
 			},
 			{
 				'type': 'task-specific correlation',
-				'name': 'Task-Specific (POS) Correlation',
+				'name': 'Task-Specific (POS) Ranking',
 				'train_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
 				'train_labels': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
 			},
@@ -61,7 +61,7 @@ database = {
 			},
 			{
 				'type': 'task-specific correlation',
-				'name': 'Task-Specific (SEM) Correlation',
+				'name': 'Task-Specific (SEM) Ranking',
 				'train_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
 				'train_labels': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
 			}

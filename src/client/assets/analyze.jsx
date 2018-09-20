@@ -481,16 +481,6 @@ class AblationResults extends React.Component {
 		super(props)
 		this.mockdata = [
 				{
-					label: "Cross-Model Correlation Bottom",
-					fillColor: "rgba(151,187,205,0.2)",
-					strokeColor: "rgba(151,187,205,1)",
-					pointColor: "rgba(151,187,205,1)",
-					pointStrokeColor: "#fff",
-					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: [34.75,34.43,33.43,32.32,30.79,28.8,26.4,23.61,20.57,17.16,14.08,11.27,9.28,7.53,6.15,5.03,4.15,3.42,3.1,2.76,2.43,2.14,2.01,1.9,1.74,1.5,1.23,1.04,0.96,0.81,0.8,0.45,0.14,0.01,0,0,0,0,0,0,0]
-				},
-				{
 					label: "Cross-Model Correlation Top",
 					fillColor: "rgba(255,255,255,0.5)",
 					strokeColor: "rgba(220,220,220,1)",
@@ -499,6 +489,16 @@ class AblationResults extends React.Component {
 					pointHighlightFill: "#fff",
 					pointHighlightStroke: "rgba(220,220,220,1)",
 					data: [34.75,19.82,16.48,14.21,11.46,10.57,9.33,8.38,7.62,6.13,5.22,4.72,4,3.6,3.55,2.9,2.52,1.98,1.93,1.6,1.36,0.69,0.47,0.49,0.14,0.09,0.06,0.04,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				},
+				{
+					label: "Cross-Model Correlation Bottom",
+					fillColor: "rgba(151,187,205,0.2)",
+					strokeColor: "rgba(151,187,205,1)",
+					pointColor: "rgba(151,187,205,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(151,187,205,1)",
+					data: [34.75,34.43,33.43,32.32,30.79,28.8,26.4,23.61,20.57,17.16,14.08,11.27,9.28,7.53,6.15,5.03,4.15,3.42,3.1,2.76,2.43,2.14,2.01,1.9,1.74,1.5,1.23,1.04,0.96,0.81,0.8,0.45,0.14,0.01,0,0,0,0,0,0,0]
 				},
 				{
 					label: "Task-Specific (POS) Ranking Top",
