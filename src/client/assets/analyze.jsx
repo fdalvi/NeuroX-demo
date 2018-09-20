@@ -482,22 +482,22 @@ class AblationResults extends React.Component {
 		this.mockdata = [
 				{
 					label: "Cross-Model Correlation Top",
-					fillColor: "rgba(255,255,255,0.5)",
-					strokeColor: "rgba(220,220,220,1)",
-					pointColor: "rgba(220,220,220,1)",
-					pointStrokeColor: "#fff",
-					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(220,220,220,1)",
-					data: [34.75,19.82,16.48,14.21,11.46,10.57,9.33,8.38,7.62,6.13,5.22,4.72,4,3.6,3.55,2.9,2.52,1.98,1.93,1.6,1.36,0.69,0.47,0.49,0.14,0.09,0.06,0.04,0,0,0,0,0,0,0,0,0,0,0,0,0],
-				},
-				{
-					label: "Cross-Model Correlation Bottom",
 					fillColor: "rgba(151,187,205,0.2)",
 					strokeColor: "rgba(151,187,205,1)",
 					pointColor: "rgba(151,187,205,1)",
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
 					pointHighlightStroke: "rgba(151,187,205,1)",
+					data: [34.75,19.82,16.48,14.21,11.46,10.57,9.33,8.38,7.62,6.13,5.22,4.72,4,3.6,3.55,2.9,2.52,1.98,1.93,1.6,1.36,0.69,0.47,0.49,0.14,0.09,0.06,0.04,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				},
+				{
+					label: "Cross-Model Correlation Bottom",
+					fillColor: "rgba(255,255,255,0.0)",
+					strokeColor: "rgba(220,220,220,1)",
+					pointColor: "rgba(220,220,220,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(220,220,220,1)",
 					data: [34.75,34.43,33.43,32.32,30.79,28.8,26.4,23.61,20.57,17.16,14.08,11.27,9.28,7.53,6.15,5.03,4.15,3.42,3.1,2.76,2.43,2.14,2.01,1.9,1.74,1.5,1.23,1.04,0.96,0.81,0.8,0.45,0.14,0.01,0,0,0,0,0,0,0]
 				},
 				{
@@ -521,10 +521,26 @@ class AblationResults extends React.Component {
 					data: [34.75,33.3,31.01,27.7,24.36,20.3,15.83,12.08,9.56,7.54,5.75,4.73,4,3.32,2.88,2.64,2.45,2.33,2.14,1.9,1.64,1.44,1.34,1.34,1.17,0.95,0.91,1.09,0.93,0.62,0.64,0.06,0.09,0.01,0,0,0,0,0,0,0]
 				},
 			]
+		this.chartOptions = {
+			responsive: true,
+			scales: {
+				xAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: 'Number of Ablated Neurons'
+					}
+				}],
+				yAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: 'BLEU (Translation Performance)'
+					}
+				}]
+			}
+		}
 	}
 
 	render() {
-		console.log(this.props.selected_rankings);
 		if (this.props.selected_rankings.length == 0) {
 			return (
 				<div
@@ -544,7 +560,7 @@ class AblationResults extends React.Component {
 			};
 			return (
 				<div class="chart-container" style={{position: 'relative', height:'50%', width:'80%'}}>
-					<Line data={data} options={{responsive: true}} redraw/>
+					<Line data={data} options={this.chartOptions} redraw/>
 				</div>
 			);
 		}
