@@ -53,6 +53,18 @@ database = {
 				'train_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
 				'train_labels': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
 			},
+			{
+				'type': 'univariate',
+				'name': 'Univariate (POS) Feature Selection',
+				'train_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
+				'train_labels': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
+			},
+			{
+				'type': 'task-specific correlation',
+				'name': 'Task-Specific (SEM) Correlation',
+				'train_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
+				'train_labels': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
+			}
 		]
 	}
 }
@@ -121,6 +133,24 @@ def load_session_data(project_id):
 		if ranking['type'] == "task-specific correlation":
 			results_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_POS/' + \
 				model_path.split('/')[-1] + '_' + ranking['train_text'].split('/')[-1] + '/top_neurons.json'
+			with open(results_path, 'r') as fp:
+				top_neurons = json.load(fp)
+			
+			sub_rankings = []
+			for label, t_n in top_neurons['top_neurons_per_label'].items():
+				sub_rankings.append({
+					'name': label,
+					'ranking': t_n
+				})
+
+			rankings.append({
+				'name': ranking['name'],
+				'ranking': top_neurons['ranking'],
+				'sub_rankings': sub_rankings
+			})
+		if ranking['type'] == "univariate":
+			results_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/univariate_POS/' + \
+				model_path.split('/')[-1] + '_' + ranking['train_text'].split('/')[-1] + '.json'
 			with open(results_path, 'r') as fp:
 				top_neurons = json.load(fp)
 			
