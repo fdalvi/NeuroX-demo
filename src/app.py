@@ -161,11 +161,18 @@ def analyze():
 		# Lead to error page
 		return render_template('index.html')
 
-	if project_id not in sessions:
-		load_session_data(project_id)
+	# if project_id not in sessions:
+	# 	load_session_data(project_id)
 
 	project_info = database[project_id]
 	return render_template('analyze.html', project_info=project_info)
+
+@app.route("/initializeProject", methods=['POST'])
+def initialize_project():
+	project_id = request.json['project_id']
+	if project_id not in sessions:
+		load_session_data(project_id)
+	return jsonify({'success': True})
 
 @app.route("/getText", methods=['POST'])
 def get_text():

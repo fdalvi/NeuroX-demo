@@ -12,6 +12,9 @@ import Button from '@material/react-button';
 import "@material/select/mdc-select";
 import {MDCSelect} from '@material/select';
 
+import "@material/linear-progress/mdc-linear-progress";
+import {MDCLinearProgress} from '@material/linear-progress';
+
 class Token extends React.Component {
 	constructor(props) {
 		super(props);
@@ -501,10 +504,30 @@ class App extends React.Component {
 
 		this.state = {
 			project_info: project_info,
-			active_mode: 'analysis'
+			active_mode: 'analysis',
+			ready: false
 		};
 
 		this.handleChangeMode = this.handleChangeMode.bind(this);
+	}
+
+	componentDidMount() {
+		let self = this;
+
+		const progressbar = new MDCLinearProgress(document.querySelector("#progressbar"))
+		let xhr = new XMLHttpRequest();
+		xhr.open("POST", "/initializeProject", true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(JSON.stringify({
+			'project_id': self.state.project_info.id
+		}))
+
+		xhr.onload = function(e) {
+			let response =  JSON.parse(xhr.response);
+			self.setState({
+				ready: true
+			})
+		}
 	}
 
 	handleChangeMode(mode) {
@@ -512,38 +535,52 @@ class App extends React.Component {
 	}
 
 	render () {
-		let main_content = <Analysis project_id={this.state.project_info.id}/>
+		if (this.state.ready) {
+			let main_content = <Analysis project_id={this.state.project_info.id}/>
 
-		if (this.state.active_mode == 'ablation')
-			main_content = <Ablation/>;
-		if (this.state.active_mode == 'manipulation')
-			main_content = <Manipulation/>;
+			if (this.state.active_mode == 'ablation')
+				main_content = <Ablation/>;
+			if (this.state.active_mode == 'manipulation')
+				main_content = <Manipulation/>;
 
-		return (
-			<div id="container">
-				<div id="page-header">
-					<h1 className="mdc-typography--headline5">
-						{this.state.project_info.name}
-					</h1>
-					<Button outlined={this.state.active_mode != 'analysis'} 
-							raised={this.state.active_mode == 'analysis'}
-							onClick={() => this.handleChangeMode('analysis')}>
-							Neuron Analysis
-					</Button>
-					<Button outlined={this.state.active_mode != 'ablation'} 
-							raised={this.state.active_mode == 'ablation'}
-							onClick={() => this.handleChangeMode('ablation')}>
-							Model Ablation
-					</Button>
-					<Button outlined={this.state.active_mode != 'manipulation'} 
-							raised={this.state.active_mode == 'manipulation'}
-							onClick={() => this.handleChangeMode('manipulation')}>
-							Neuron Manipulation
-					</Button>
+			return (
+				<div id="container">
+					<div id="page-header">
+						<h1 className="mdc-typography--headline5">
+							{this.state.project_info.name}
+						</h1>
+						<Button outlined={this.state.active_mode != 'analysis'} 
+								raised={this.state.active_mode == 'analysis'}
+								onClick={() => this.handleChangeMode('analysis')}>
+								Neuron Analysis
+						</Button>
+						<Button outlined={this.state.active_mode != 'ablation'} 
+								raised={this.state.active_mode == 'ablation'}
+								onClick={() => this.handleChangeMode('ablation')}>
+								Model Ablation
+						</Button>
+						<Button outlined={this.state.active_mode != 'manipulation'} 
+								raised={this.state.active_mode == 'manipulation'}
+								onClick={() => this.handleChangeMode('manipulation')}>
+								Neuron Manipulation
+						</Button>
+					</div>
+					{main_content}
 				</div>
-				{main_content}
-			</div>
-		);
+			);
+		} else {
+			return (
+				<div id="cloak">
+					<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>Dissection</span> </h1>
+					<div className="mdc-typography--headline6" style={{marginBottom: "30px"}}>
+						Hang on while we crunch the numbers for you...
+					</div>
+					<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+					<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+					</div>
+				</div>
+			);
+		}
 	}
 }
 

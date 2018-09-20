@@ -165,3 +165,20 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+
+#cloak {
+    margin-left: 25vw;
+    width: 50vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-title {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    font-size: 60px;
+}

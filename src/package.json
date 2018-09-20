@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@material/dialog": "^0.39.3",
+    "@material/linear-progress": "^0.39.1",
     "@material/list": "^0.39.3",
     "@material/react-button": "^0.4.2",
     "@material/react-fab": "^0.4.2",
