@@ -6,6 +6,8 @@ var dependencies = require('./package.json').dependencies;
 var BUILD_DIR = path.resolve(__dirname, 'client/dist');
 var APP_DIR = path.resolve(__dirname, 'client/assets');
 
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 function isExternal(module) {
 	var userRequest = module.userRequest;
 
@@ -31,11 +33,21 @@ var config = {
 	},
 	output: {
 		path: BUILD_DIR,
-		filename: '[name].js'
+		filename: 'js/[name].[chunkhash].js',
+		publicPath: '/'
 	},
 	module : {
 		rules : [
-			{ test: /\.jsx?/, include: APP_DIR, loader: 'babel-loader' },
+			{
+				test: /\.jsx?/,
+				include: APP_DIR,
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: [['@babel/preset-env', { modules: false }], '@babel/preset-react']
+					}
+				}
+			},
 			{
 				test: /\.css$/, 
 				use: ["style-loader", "css-loader"]
@@ -65,18 +77,28 @@ var config = {
 	},
 	optimization: {
 	  splitChunks: {
-	    cacheGroups: {
-	      vendor: {
-	        chunks: "initial",
-	        test: path.resolve(__dirname, "node_modules"),
-	        name: "vendor",
-	        enforce: true
-	      }
-	    }
+		cacheGroups: {
+		  vendor: {
+			chunks: "all",
+			test: path.resolve(__dirname, "node_modules"),
+			name: "vendor"
+		  }
+		}
 	  },
-	  minimize: true
+	  minimize: true,
+	  usedExports: true
 	},
 	plugins: [
+		new HtmlWebpackPlugin({
+			filename: 'index.html',
+			template: './client/index.html',
+			chunks: ['vendor', 'index']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'analyze.html',
+			template: './client/analyze.html',
+			chunks: ['vendor', 'analyze']
+		}),
 		new webpack.LoaderOptionsPlugin({
 			options: {
 				sassLoader: {
@@ -84,8 +106,9 @@ var config = {
 				}
 			}
 		})
-  	],
-  	mode: 'production'
+	],
+	mode: 'production',
+	devtool: 'source-map'
 };
 
 module.exports = config;
