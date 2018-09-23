@@ -228,7 +228,8 @@ class ActivationsMap extends React.Component {
 		super(props);
 
 		this.state = {
-			'activations': []
+			'activations': [],
+			'loadingActivations': false
 		}
 
 		this.loadActivations = this.loadActivations.bind(this);
@@ -237,6 +238,7 @@ class ActivationsMap extends React.Component {
 	loadActivations(project_id, neurons) {
 		let self = this;
 
+		self.setState({loadingActivations: true});
 		let xhr = new XMLHttpRequest();
 		xhr.open("POST", "/getActivations", true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
@@ -249,7 +251,8 @@ class ActivationsMap extends React.Component {
 			let response =  JSON.parse(xhr.response);
 
 			self.setState({
-				'activations': response['activations']
+				'activations': response['activations'],
+				loadingActivations: false
 			})
 		}
 	}
@@ -273,6 +276,13 @@ class ActivationsMap extends React.Component {
 					className="mdc-typography--body1"
 					style={{marginLeft: '10px', color: '#555'}}>
 					Select at least one neuron to visualize the activations of those neurons
+					{this.state.loadingActivations ? (
+							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+								<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+									<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+								</div>
+							</div>):""
+					}
 				</div>
 			);
 		} else {
@@ -298,6 +308,13 @@ class ActivationsMap extends React.Component {
 			}
 			return (
 				<div id="neuron-list">
+					{this.state.loadingActivations ? (
+							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+								<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+									<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+								</div>
+							</div>):""
+					}
 					{sentences.map(t => <SentenceMap name={t.name} tokens={t.tokens}/>)}
 				</div>
 			);
@@ -313,7 +330,9 @@ class Analysis extends React.Component {
 			'sentences': [],
 			'rankings': [],
 			'selected_ranking': -1,
-			'selected_neurons': []
+			'selected_neurons': [],
+			'loadingSentences': true,
+			'loadingRankings': true
 		}
 
 		this.handleRankingSelect = this.handleRankingSelect.bind(this);
@@ -343,7 +362,8 @@ class Analysis extends React.Component {
 			}
 
 			self.setState({
-				'sentences': sentences
+				'sentences': sentences,
+				'loadingSentences': false
 			})
 		}
 
@@ -369,7 +389,8 @@ class Analysis extends React.Component {
 			}
 
 			self.setState({
-				'rankings': flat_rankings
+				'rankings': flat_rankings,
+				'loadingRankings': false
 			})
 		}
 	}
@@ -437,6 +458,13 @@ class Analysis extends React.Component {
 							className="mdc-typography--button">
 							Translations
 						</h1>
+						{	this.state.loadingSentences ? (
+							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+								<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+									<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+								</div>
+							</div>):""
+						}
 						{sentences}
 					</div>
 					<div id="rankings-container">
@@ -444,6 +472,13 @@ class Analysis extends React.Component {
 							className="mdc-typography--button">
 							Rankings
 						</h1>
+						{	this.state.loadingRankings ? (
+							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+								<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+									<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+								</div>
+							</div>):""
+						}
 						{rankings}
 					</div>
 				</div>
@@ -791,7 +826,6 @@ class App extends React.Component {
 	componentDidMount() {
 		let self = this;
 
-		const progressbar = new MDCLinearProgress(document.querySelector("#progressbar"))
 		let xhr = new XMLHttpRequest();
 		xhr.open("POST", "/initializeProject", true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
@@ -853,7 +887,7 @@ class App extends React.Component {
 						Hang on while we crunch the numbers for you...
 					</div>
 					<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-					<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+						<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
 					</div>
 				</div>
 			);
