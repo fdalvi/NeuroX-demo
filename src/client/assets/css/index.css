@@ -1,5 +1,6 @@
 body {
     margin: 0px;
+    font-family: Roboto,sans-serif;
 }
 
 #app {
@@ -17,6 +18,18 @@ body {
 .dark-icon {
     background-color: rgba(0, 0, 0, 0.3);
     color: white; 
+}
+
+.subtitle {
+    font-family: Roboto,sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 1rem;
+    line-height: 1.75rem;
+    font-weight: 400;
+    letter-spacing: .00937em;
+    text-decoration: inherit;
+    text-transform: inherit;
 }
 
 /*********************************** HEADER ***********************************/
@@ -46,31 +59,36 @@ body {
 }
 
 #existing-projects {
-    width: 30%;
+    width: 300px;
+    padding-left: 30px;
     padding-right: 30px;
 }
 
 #project-info-container {
-    width: 70%;
+    width: 100%;
+    max-width: 1100px;
     padding-left: 30px;
+    padding-right: 30px;
 }
 
-#new-project-container {
+#new-project-items-container {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #rankings-container {
-    margin-top: 80px;
+    margin-top: 16px;
     margin-left: 20px;
     margin-right: 20px;
     border: 1px solid #ccc;
     border-radius: 4px;
 
     color: #777;
-    width: 500px;
-    height: 270px;  
+    width: 468px;
+    height: 454px;  
     padding-left: 15px;
+    padding-right: 15px;
 
     display: flex;
     flex-direction: column;
@@ -84,6 +102,7 @@ body {
 
 #ranking-controls {
     flex-grow: 0;
+    flex-shrink: 0;
     display: flex;
     justify-content: flex-end;
     margin: 10px;
