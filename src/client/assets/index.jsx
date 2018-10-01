@@ -35,6 +35,47 @@ import Popover from '@material-ui/core/Popover';
 
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 
+
+const sampleProject = {
+	projectName: 'English-Spanish 2 Layer',
+	modelPath: '/data/sls/qcri/mt/work/NeuroDissection/en-es_model1.pt',
+	textPath: '/data/sls/qcri/mt/work/NeuroDissection/analysis-text.tok',
+	mtTestPath: '/data/sls/qcri/mt/work/NeuroDissection/iwslt.en',
+	mtReferencePath: '/data/sls/qcri/mt/work/NeuroDissection/iwslt.es',
+	rankings: [
+		{
+			type: 'cross-model',
+			name: 'Model 2/3 Cross-Model Ranking',
+			crossModelPaths: '/data/sls/qcri/mt/work/NeuroDissection/en-es_model2.pt\n/data/sls/qcri/mt/work/NeuroDissection/en-es_model3.pt',
+			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok'
+		},
+		{
+			type: 'task-specific',
+			name: 'Part-of-Speech Ranking',
+			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok',
+			labelsPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.pos'
+		},
+		{
+			type: 'task-specific',
+			name: 'Semantic Tags Ranking',
+			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok',
+			labelsPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.sem'
+		},
+		{
+			type: 'univariate',
+			name: 'Part-of-Speech Univariate Selection',
+			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok',
+			labelsPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.pos'
+		},
+		{
+			type: 'variance',
+			name: 'Ranking by Variance',
+			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok'
+		},
+	],
+}
+
+
 const theme = createMuiTheme({
 	palette: {
 		primary: {
@@ -677,6 +718,107 @@ class NewProject extends React.Component {
 	}
 }
 
+class ExistingProject extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.handleProjectLoad = this.handleProjectLoad.bind(this);
+	}
+
+	handleProjectLoad() {
+		let project_id = "4e763af331"
+		window.location.href = "/analyze?project=" + project_id;
+	}
+
+	render() {
+		let project = this.props.project;
+		return (
+			<div>
+				<Typography variant="headline" gutterBottom>
+					Existing Project:
+				</Typography>
+				<div id="new-project-items-container">
+					<div style={{'width': '500px', marginLeft: '20px', display: 'flex', flexDirection: 'column'}} >
+						<TextField
+							id="outlined-dense"
+							label="Project Name"
+							margin="normal"
+							variant="outlined"
+							value={project.projectName}
+							fullWidth
+						/>
+						<TextField
+							id="outlined-dense"
+							label="Model Path"
+							margin="normal"
+							variant="outlined"
+							value={project.modelPath}
+							fullWidth
+						/>
+						<TextField
+							id="outlined-dense"
+							label="Analysis Text Path"
+							margin="normal"
+							variant="outlined"
+							value={project.textPath}
+							fullWidth
+						/>
+						<TextField
+							id="outlined-dense"
+							label="Machine Translation Test Path"
+							margin="normal"
+							variant="outlined"
+							value={project.mtTestPath}
+							fullWidth
+						/>
+						<TextField
+							id="outlined-dense"
+							label="Machine Translation Reference Path"
+							margin="normal"
+							variant="outlined"
+							value={project.mtReferencePath}
+							fullWidth
+						/>
+					</div>
+					<div id="rankings-container" style={{height: '374px'}}>
+						<h1 className="subtitle">
+							Rankings:
+						</h1>
+						<div id="rankings-list">
+							<List component="nav">
+								<Divider />
+								{
+									(project.rankings.length==0) ? <div>
+											<ListItem>
+												<ListItemText
+													primary="You have no rankings yet."
+												/>
+											</ListItem>
+											<Divider />
+										</div> : ""
+								}
+								{
+									project.rankings.map((r, i) => (
+										<RankingItem ranking={r} />
+									))
+								}
+							</List>
+						</div>
+					</div>
+				</div>
+				<div style={{display: 'flex', flexWrap: 'wrap'}}>
+					<div style={{'width': '500px', 'marginLeft': '20px', height: '10px'}}></div>
+					<div style={{'width': '500px', 'marginLeft': '20px', marginBottom: '40px', display: 'flex', justifyContent: 'flex-end'}}>
+						<Button variant="raised" color="primary" onClick={this.handleProjectLoad}>
+							Load project
+						</Button>
+					</div>
+				</div>
+			</div>
+		)
+	}
+}
+
 class App extends React.Component {
 	constructor(props) {
 		super(props);
@@ -714,9 +856,7 @@ class App extends React.Component {
 		)
 		if (this.state.selectedIndex > -1) {
 			project_info_elem = <div id="project-info-container">
-				<Typography variant="headline" gutterBottom>
-					{this.state.projects[this.state.selectedIndex].name}
-				</Typography>
+				<ExistingProject project={sampleProject} />
 			</div>
 		}
 		return (
