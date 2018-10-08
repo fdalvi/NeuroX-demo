@@ -39,36 +39,147 @@ app.config.from_mapping({
 database = {
 	'4e763af331': {
 		'id': "4e763af331",
-		'name': "English-Spanish bidirectional model",
-		'date': "2 September, 2018",
-		'model': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-1.pt',
-		'analysis_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/train.tok',
+		'projectName': "English-Spanish bidirectional model",
+		'creationDate': "2 September, 2018",
+		'modelPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-1.pt',
+		'textPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/train.tok',
+		'mtTestPath': '/data/sls/qcri/mt/work/NeuroDissection/iwslt.en',
+		'mtReferencePath': '/data/sls/qcri/mt/work/NeuroDissection/iwslt.es',
+		'outputStyler': '{"direction": "ltr", "fontFamily": "monospace"}',
 		'rankings': [
 			{
-				'type': 'cross-model correlation',
-				'name': 'Cross-Model Correlation',
-				'models': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-2.pt,/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-3.pt',
-				'text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
+				'id': 0,
+				'type': 'cross-model',
+				'name': 'Model 2/3 Cross-Model Ranking',
+				'crossModelPaths': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-2.pt\n/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-3.pt',
+				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
 			},
 			{
-				'type': 'task-specific correlation',
-				'name': 'Task-Specific (POS) Ranking',
-				'train_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-				'train_labels': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
+				'id': 1,
+				'type': 'task-specific',
+				'name': 'Part-of-Speech Ranking',
+				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
+				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
 			},
 			{
+				'id': 2,
 				'type': 'univariate',
-				'name': 'Univariate (POS) Feature Selection',
-				'train_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-				'train_labels': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
+				'name': 'Part-of-Speech Univariate Feature Selection',
+				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
+				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
 			},
 			{
-				'type': 'task-specific correlation',
-				'name': 'Task-Specific (SEM) Ranking',
-				'train_text': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-				'train_labels': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
+				'id': 3,
+				'type': 'task-specific',
+				'name': 'Semantic Tags Ranking',
+				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/14ktrain.tok',
+				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/14ktrain.sem'
 			}
-		]
+		],
+		'store': {
+			'activations': '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_train.tok.pt',
+			'outputs': '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_outputs/en-es-1.pt_train.tok.out',
+			'rankings': {
+				0: {
+					'activations': [
+							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_10ktrain.tok.pt',
+							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-2.pt_10ktrain.tok.pt',
+							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-3.pt_10ktrain.tok.pt'
+						],
+					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/cross_correlations/en-es-10k-activations.json'
+				},
+				1: {
+					'activations': [
+						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_10ktrain.tok.pt',
+					],
+					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_POS/en-es-1.pt_10ktrain.tok/top_neurons.json'
+				},
+				2: {
+					'activations': [
+						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_10ktrain.tok.pt',
+					],
+					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/univariate_POS/en-es-1.pt_10ktrain.tok.json'
+				},
+				3: {
+					'activations': [
+						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_10ktrain.tok.pt',
+					],
+					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_SEM/en-es-1.pt_14ktrain.tok/top_neurons.json'
+				},
+			}
+		}
+	},
+	'4e763af332': {
+		'id': "4e763af332",
+		'projectName': "English-Arabic 2-layer model",
+		'creationDate': "9 September, 2018",
+		'modelPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-ar-1.pt',
+		'textPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/train.tok',
+		'mtTestPath': '/data/sls/qcri/mt/work/NeuroDissection/iwslt.en',
+		'mtReferencePath': '/data/sls/qcri/mt/work/NeuroDissection/iwslt.ar',
+		'outputStyler': '{"direction": "rtl", "fontFamily": "Roboto"}',
+		'rankings': [
+			{
+				'id': 0,
+				'type': 'cross-model',
+				'name': 'Model 2/3 Cross-Model Ranking',
+				'crossModelPaths': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-ar-2.pt\n/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-ar-3.pt',
+				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
+			},
+			{
+				'id': 1,
+				'type': 'task-specific',
+				'name': 'Part-of-Speech Ranking',
+				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
+				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
+			},
+			{
+				'id': 2,
+				'type': 'univariate',
+				'name': 'Part-of-Speech Univariate Feature Selection',
+				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
+				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
+			},
+			{
+				'id': 3,
+				'type': 'task-specific',
+				'name': 'Semantic Tags Ranking',
+				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/14ktrain.tok',
+				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/14ktrain.sem'
+			}
+		],
+		'store': {
+			'activations': '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_train.tok.pt',
+			'outputs': '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_outputs/en-ar-1.pt_train.tok.out',
+			'rankings': {
+				0: {
+					'activations': [
+							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_10ktrain.tok.pt',
+							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-2.pt_10ktrain.tok.pt',
+							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-3.pt_10ktrain.tok.pt'
+						],
+					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/cross_correlations/en-ar-10k-activations.json'
+				},
+				1: {
+					'activations': [
+						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_10ktrain.tok.pt',
+					],
+					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_POS/en-ar-1.pt_10ktrain.tok/top_neurons.json'
+				},
+				2: {
+					'activations': [
+						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_10ktrain.tok.pt',
+					],
+					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/univariate_POS/en-ar-1.pt_10ktrain.tok.json'
+				},
+				3: {
+					'activations': [
+						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_10ktrain.tok.pt',
+					],
+					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_SEM/en-ar-1.pt_14ktrain.tok/top_neurons.json'
+				},
+			}
+		}
 	}
 }
 
@@ -76,12 +187,12 @@ database = {
 sessions = {}
 
 def load_session_data(project_id):
-	model_path = database[project_id]['model']
-	text_path = database[project_id]['analysis_text']
+	model_path = database[project_id]['modelPath']
+	text_path = database[project_id]['textPath']
+	store_paths = database[project_id]['store']
 
 	print("Loading activations...")
-	raw_activations_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/' + \
-		model_path.split('/')[-1] + '_' + text_path.split('/')[-1] + '.pt'
+	raw_activations_path = store_paths['activations']
 	activations = torch.load(raw_activations_path)
 
 	print("Normalizing activations...")
@@ -113,8 +224,7 @@ def load_session_data(project_id):
 		print("[WARNING] Activation Maps and Top Words may be corrupted")
 
 	print("Loading predictions...")
-	pred_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_outputs/' + \
-		model_path.split('/')[-1] + '_' + text_path.split('/')[-1] + '.out'
+	pred_path = store_paths['outputs']
 	pred_text = []
 	with open(pred_path) as fp:
 		for line in fp:
@@ -123,19 +233,17 @@ def load_session_data(project_id):
 	print("Loading rankings...")
 	rankings = []
 	for ranking in database[project_id]['rankings']:
-		if ranking['type'] == "cross-model correlation":
+		if ranking['type'] == "cross-model":
 			lang_pair = model_path.split('/')[-1][:5]
-			correlations_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/cross_correlations/' + \
-				lang_pair + '-' + ranking['text'].split('/')[-1][:3] + '-activations.json'
+			correlations_path = store_paths['rankings'][ranking['id']]['ranking']
 			with open(correlations_path, 'r') as fp:
 				correlations = json.load(fp)
 			rankings.append({
 				'name': ranking['name'],
 				'ranking': [x[0] for x in correlations[lang_pair + '-1']]
 			})
-		if ranking['type'] == "task-specific correlation":
-			results_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_POS/' + \
-				model_path.split('/')[-1] + '_' + ranking['train_text'].split('/')[-1] + '/top_neurons.json'
+		if ranking['type'] == "task-specific":
+			results_path = store_paths['rankings'][ranking['id']]['ranking']
 			with open(results_path, 'r') as fp:
 				top_neurons = json.load(fp)
 			
@@ -152,8 +260,7 @@ def load_session_data(project_id):
 				'sub_rankings': sub_rankings
 			})
 		if ranking['type'] == "univariate":
-			results_path = '/data/sls/qcri/mt/work/NeuroDissection/test_data/univariate_POS/' + \
-				model_path.split('/')[-1] + '_' + ranking['train_text'].split('/')[-1] + '.json'
+			results_path = store_paths['rankings'][ranking['id']]['ranking']
 			with open(results_path, 'r') as fp:
 				top_neurons = json.load(fp)
 			
@@ -184,7 +291,7 @@ def load_session_data(project_id):
 # a route where we will display a welcome message via an HTML template
 @app.route("/")
 def index():
-	return render_template('index.html')
+	return render_template('index.html', projects=[database[x] for x in sorted(database, key=lambda p: database[p]['creationDate'], reverse=True)])
 
 @app.route('/js/<path:filename>')
 def serve_js(filename):

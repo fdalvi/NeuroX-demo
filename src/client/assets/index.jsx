@@ -35,47 +35,6 @@ import Popover from '@material-ui/core/Popover';
 
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 
-
-const sampleProject = {
-	projectName: 'English-Spanish 2 Layer',
-	modelPath: '/data/sls/qcri/mt/work/NeuroDissection/en-es_model1.pt',
-	textPath: '/data/sls/qcri/mt/work/NeuroDissection/analysis-text.tok',
-	mtTestPath: '/data/sls/qcri/mt/work/NeuroDissection/iwslt.en',
-	mtReferencePath: '/data/sls/qcri/mt/work/NeuroDissection/iwslt.es',
-	rankings: [
-		{
-			type: 'cross-model',
-			name: 'Model 2/3 Cross-Model Ranking',
-			crossModelPaths: '/data/sls/qcri/mt/work/NeuroDissection/en-es_model2.pt\n/data/sls/qcri/mt/work/NeuroDissection/en-es_model3.pt',
-			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok'
-		},
-		{
-			type: 'task-specific',
-			name: 'Part-of-Speech Ranking',
-			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok',
-			labelsPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.pos'
-		},
-		{
-			type: 'task-specific',
-			name: 'Semantic Tags Ranking',
-			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok',
-			labelsPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.sem'
-		},
-		{
-			type: 'univariate',
-			name: 'Part-of-Speech Univariate Selection',
-			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok',
-			labelsPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.pos'
-		},
-		{
-			type: 'variance',
-			name: 'Ranking by Variance',
-			tokensPath: '/data/sls/qcri/mt/work/NeuroDissection/10k-text.tok'
-		},
-	],
-}
-
-
 const theme = createMuiTheme({
 	palette: {
 		primary: {
@@ -602,7 +561,7 @@ class NewProject extends React.Component {
 		}
 
 		if (fieldsComplete) {
-			let project_id = "4e763af331"
+			let project_id = "4e763af332"
 			window.location.href = "/analyze?project=" + project_id;
 		} else {
 			this.setState(errors);
@@ -726,8 +685,7 @@ class ExistingProject extends React.Component {
 	}
 
 	handleProjectLoad() {
-		let project_id = "4e763af331"
-		window.location.href = "/analyze?project=" + project_id;
+		window.location.href = "/analyze?project=" + this.props.project.id;
 	}
 
 	render() {
@@ -824,20 +782,7 @@ class App extends React.Component {
 		super(props);
 
 		this.state = {
-			projects: [
-				{
-					name: "English-Arabic bidirectional model",
-					date: "9 September, 2018"
-				},
-				{
-					name: "English-Spanish 2 Layer",
-					date: "2 September, 2018"
-				},
-				{
-					name: "German-English Analysis",
-					date: "29 August 2018"
-				}
-			],
+			projects: project_list,
 			selectedIndex: -1
 		};
 
@@ -856,7 +801,7 @@ class App extends React.Component {
 		)
 		if (this.state.selectedIndex > -1) {
 			project_info_elem = <div id="project-info-container">
-				<ExistingProject project={sampleProject} />
+				<ExistingProject project={this.state.projects[this.state.selectedIndex]} />
 			</div>
 		}
 		return (
@@ -886,8 +831,8 @@ class App extends React.Component {
 									<ListItem selected={this.state.selectedIndex == i} onClick={() => this.handleProjectSelect(i)} button>
 										<Avatar> <FolderIcon /> </Avatar>
 										<ListItemText
-								  			primary={p.name}
-								  			secondary={p.date}
+								  			primary={p.projectName}
+								  			secondary={p.creationDate}
 										/>
 									</ListItem>
 								))

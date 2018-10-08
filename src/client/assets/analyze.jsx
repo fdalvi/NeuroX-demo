@@ -50,7 +50,7 @@ class Sentence extends React.Component {
 	render() {
 		return (
 			<div>
-				<span className={"sentence"}>
+				<span style={this.props.style} className={"sentence"}>
 					<span className="item-name">{this.props.name}</span>
 					{this.props.tokens.map(token => <Token token={token}/>)}
 				</span>
@@ -74,7 +74,7 @@ class SentenceMap extends React.Component {
 		} else {
 			return (
 				<div>
-					<span className={"sentence"}>
+					<span style={{fontFamily: 'monospace'}} className={"sentence"}>
 						<span className="item-name"> {this.props.name} </span>
 						{this.props.tokens.map(token => <Token token={token.text} activation={token.activation}/>)}
 					</span>
@@ -418,8 +418,8 @@ class Analysis extends React.Component {
 		for (var i = 0; i < this.state.sentences.length; i++) {
 			sentences.push(
 				<div style={{margin: '7px', borderBottom: '1px dashed #ccc'}}>
-					<Sentence name="source" tokens={this.state.sentences[i].source} />
-					<Sentence name="translation" tokens={this.state.sentences[i].pred} />
+					<Sentence name="source" tokens={this.state.sentences[i].source} style={{direction: 'ltr', fontFamily: 'monospace'}}/>
+					<Sentence name="translation" tokens={this.state.sentences[i].pred} style={this.props.outputStyler}/>
 				</div>
 			)
 		}
@@ -726,8 +726,8 @@ class Ablation extends React.Component {
 		for (var i = 0; i < this.state.sentences.length; i++) {
 			sentences.push(
 				<div style={{margin: '7px', borderBottom: '1px dashed #ccc'}}>
-					<Sentence name="source" tokens={this.state.sentences[i].source} />
-					<Sentence name="translation" tokens={this.state.sentences[i].pred} />
+					<Sentence name="source" tokens={this.state.sentences[i].source} style={{direction: 'ltr', fontFamily: 'monospace'}}/>
+					<Sentence name="translation" tokens={this.state.sentences[i].pred} style={this.props.outputStyler}/>
 				</div>
 			)
 		}
@@ -847,18 +847,24 @@ class App extends React.Component {
 
 	render () {
 		if (this.state.ready) {
-			let main_content = <Analysis project_id={this.state.project_info.id}/>
+			let main_content = <Analysis
+				project_id={this.state.project_info.id}
+				outputStyler={JSON.parse(this.state.project_info.outputStyler)} />
 
 			if (this.state.active_mode == 'ablation')
-				main_content = <Ablation project_id={this.state.project_info.id}/>;
+				main_content = <Ablation
+				project_id={this.state.project_info.id}
+				outputStyler={JSON.parse(this.state.project_info.outputStyler)} />;
 			if (this.state.active_mode == 'manipulation')
-				main_content = <Manipulation project_id={this.state.project_info.id}/>;
+				main_content = <Manipulation
+				project_id={this.state.project_info.id}
+				outputStyler={JSON.parse(this.state.project_info.outputStyler)} />;
 
 			return (
 				<div id="container">
 					<div id="page-header">
 						<h1 className="mdc-typography--headline5">
-							{this.state.project_info.name}
+							{this.state.project_info.projectName}
 						</h1>
 						<Button outlined={this.state.active_mode != 'analysis'} 
 								raised={this.state.active_mode == 'analysis'}
