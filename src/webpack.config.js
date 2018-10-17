@@ -4,7 +4,7 @@ var path = require('path');
 var dependencies = require('./package.json').dependencies;
 
 var BUILD_DIR = path.resolve(__dirname, 'client/dist');
-var APP_DIR = path.resolve(__dirname, 'client/assets');
+var APP_DIR = path.resolve(__dirname, 'client/components');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -25,8 +25,8 @@ function isExternal(module) {
 
 var config = {
 	entry: {
-		index: APP_DIR + '/index.jsx',
-		analyze: APP_DIR + '/analyze.jsx'
+		index: APP_DIR + '/index/Index.jsx',
+		analyze: APP_DIR + '/analyze/Analyze.jsx'
 	},
 	resolve: {
 		extensions: ['.json', '.jsx', '.js', '.scss', '.css']
@@ -107,7 +107,7 @@ var config = {
 			}
 		})
 	],
-	mode: 'production',
+	mode: "production",
 	devtool: 'source-map'
 };
 

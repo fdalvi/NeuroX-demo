@@ -32,7 +32,8 @@ def flatten(x):
 # creates a Flask application, named app
 app = Flask(__name__, template_folder="client/dist")
 app.config.from_mapping({
-	"JS_FOLDER": "client/dist/js"
+	"JS_FOLDER": "client/dist/js",
+	"IMG_FOLDER": "client/assets/img"
 })
 
 # Fake projects - Eventually will come from a database
@@ -292,6 +293,11 @@ def load_session_data(project_id):
 @app.route("/")
 def index():
 	return render_template('index.html', projects=[database[x] for x in sorted(database, key=lambda p: database[p]['creationDate'], reverse=True)])
+
+@app.route('/img/<path:filename>')
+def serve_imgs(filename):
+    return send_from_directory(app.config['IMG_FOLDER'],
+                               filename, as_attachment=True)
 
 @app.route('/js/<path:filename>')
 def serve_js(filename):

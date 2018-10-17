@@ -6,8 +6,7 @@ import "@material/typography/mdc-typography";
 import "./css/analyze.css";
 import "./css/vis_elements.css";
 
-import '@material/react-button/index.scss';
-import Button from '@material/react-button';
+import Button from '@material-ui/core/Button';
 
 import "@material/select/mdc-select";
 import {MDCSelect} from '@material/select';
@@ -21,6 +20,19 @@ import "@material/checkbox/mdc-checkbox";
 import {MDCCheckbox} from '@material/checkbox';
 
 import {Line} from "react-chartjs";
+
+import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+	palette: {
+		primary: {
+			main: '#6200ee'
+		},
+		secondary: {
+			main: '#018786'
+		},
+	},
+});
 
 class Token extends React.Component {
 	constructor(props) {
@@ -861,41 +873,45 @@ class App extends React.Component {
 				outputStyler={JSON.parse(this.state.project_info.outputStyler)} />;
 
 			return (
-				<div id="container">
-					<div id="page-header">
-						<h1 className="mdc-typography--headline5">
-							{this.state.project_info.projectName}
-						</h1>
-						<Button outlined={this.state.active_mode != 'analysis'} 
-								raised={this.state.active_mode == 'analysis'}
-								onClick={() => this.handleChangeMode('analysis')}>
+				<MuiThemeProvider theme={theme}>
+					<div id="container">
+						<div id="page-header">
+							<h1 className="mdc-typography--headline5">
+								{this.state.project_info.projectName}
+							</h1>
+							<Button onClick={() => this.handleChangeMode('analysis')}
+								variant={this.state.active_mode != 'analysis'?"outlined":"raised"}
+								color="primary">
 								Neuron Analysis
-						</Button>
-						<Button outlined={this.state.active_mode != 'ablation'} 
-								raised={this.state.active_mode == 'ablation'}
-								onClick={() => this.handleChangeMode('ablation')}>
+							</Button>
+							<Button onClick={() => this.handleChangeMode('ablation')}
+								variant={this.state.active_mode != 'ablation'?"outlined":"raised"}
+								color="primary">
 								Model Ablation
-						</Button>
-						<Button outlined={this.state.active_mode != 'manipulation'} 
-								raised={this.state.active_mode == 'manipulation'}
-								onClick={() => this.handleChangeMode('manipulation')}>
+							</Button>
+							<Button onClick={() => this.handleChangeMode('manipulation')}
+								variant={this.state.active_mode != 'manipulation'?"outlined":"raised"}
+								color="primary">
 								Neuron Manipulation
-						</Button>
+							</Button>
+						</div>
+						{main_content}
 					</div>
-					{main_content}
-				</div>
+				</MuiThemeProvider>
 			);
 		} else {
 			return (
-				<div id="cloak">
-					<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>Dissection</span> </h1>
-					<div className="mdc-typography--headline6" style={{marginBottom: "30px"}}>
-						Hang on while we crunch the numbers for you...
+				<MuiThemeProvider theme={theme}>
+					<div id="cloak">
+						<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>Dissection</span> </h1>
+						<div className="mdc-typography--headline6" style={{marginBottom: "30px"}}>
+							Hang on while we crunch the numbers for you...
+						</div>
+						<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+							<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+						</div>
 					</div>
-					<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-						<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
-					</div>
-				</div>
+				</MuiThemeProvider>
 			);
 		}
 	}
