@@ -2,6 +2,10 @@ from flask import Flask
 from flask import render_template
 from flask import request, jsonify, send_from_directory
 
+import server.database as database
+import uuid
+from peewee import *
+
 import json
 import numpy as np
 import torch
@@ -35,162 +39,39 @@ app.config.from_mapping({
 	"JS_FOLDER": "client/dist/js",
 	"IMG_FOLDER": "client/assets/img"
 })
-
-# Fake projects - Eventually will come from a database
-database = {
-	'4e763af331': {
-		'id': "4e763af331",
-		'projectName': "English-Spanish bidirectional model",
-		'creationDate': "2 September, 2018",
-		'modelPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-1.pt',
-		'textPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/train.tok',
-		'mtTestPath': '/data/sls/qcri/mt/work/NeuroDissection/iwslt.en',
-		'mtReferencePath': '/data/sls/qcri/mt/work/NeuroDissection/iwslt.es',
-		'outputStyler': '{"direction": "ltr", "fontFamily": "monospace"}',
-		'rankings': [
-			{
-				'id': 0,
-				'type': 'cross-model',
-				'name': 'Model 2/3 Cross-Model Ranking',
-				'crossModelPaths': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-2.pt\n/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-es-3.pt',
-				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-			},
-			{
-				'id': 1,
-				'type': 'task-specific',
-				'name': 'Part-of-Speech Ranking',
-				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
-			},
-			{
-				'id': 2,
-				'type': 'univariate',
-				'name': 'Part-of-Speech Univariate Feature Selection',
-				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
-			},
-			{
-				'id': 3,
-				'type': 'task-specific',
-				'name': 'Semantic Tags Ranking',
-				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/14ktrain.tok',
-				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/14ktrain.sem'
-			}
-		],
-		'store': {
-			'activations': '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_train.tok.pt',
-			'outputs': '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_outputs/en-es-1.pt_train.tok.out',
-			'rankings': {
-				0: {
-					'activations': [
-							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_10ktrain.tok.pt',
-							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-2.pt_10ktrain.tok.pt',
-							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-3.pt_10ktrain.tok.pt'
-						],
-					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/cross_correlations/en-es-10k-activations.json'
-				},
-				1: {
-					'activations': [
-						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_10ktrain.tok.pt',
-					],
-					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_POS/en-es-1.pt_10ktrain.tok/top_neurons.json'
-				},
-				2: {
-					'activations': [
-						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_10ktrain.tok.pt',
-					],
-					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/univariate_POS/en-es-1.pt_10ktrain.tok.json'
-				},
-				3: {
-					'activations': [
-						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-es-1.pt_10ktrain.tok.pt',
-					],
-					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_SEM/en-es-1.pt_14ktrain.tok/top_neurons.json'
-				},
-			}
-		}
-	},
-	'4e763af332': {
-		'id': "4e763af332",
-		'projectName': "English-Arabic 2-layer model",
-		'creationDate': "9 September, 2018",
-		'modelPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-ar-1.pt',
-		'textPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/train.tok',
-		'mtTestPath': '/data/sls/qcri/mt/work/NeuroDissection/iwslt.en',
-		'mtReferencePath': '/data/sls/qcri/mt/work/NeuroDissection/iwslt.ar',
-		'outputStyler': '{"direction": "rtl", "fontFamily": "Roboto"}',
-		'rankings': [
-			{
-				'id': 0,
-				'type': 'cross-model',
-				'name': 'Model 2/3 Cross-Model Ranking',
-				'crossModelPaths': '/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-ar-2.pt\n/data/sls/qcri/mt/work/NeuroDissection/test_data/models/en-ar-3.pt',
-				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-			},
-			{
-				'id': 1,
-				'type': 'task-specific',
-				'name': 'Part-of-Speech Ranking',
-				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
-			},
-			{
-				'id': 2,
-				'type': 'univariate',
-				'name': 'Part-of-Speech Univariate Feature Selection',
-				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.tok',
-				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/10ktrain.pos'
-			},
-			{
-				'id': 3,
-				'type': 'task-specific',
-				'name': 'Semantic Tags Ranking',
-				'tokensPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/14ktrain.tok',
-				'labelsPath': '/data/sls/qcri/mt/work/NeuroDissection/test_data/inputs/14ktrain.sem'
-			}
-		],
-		'store': {
-			'activations': '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_train.tok.pt',
-			'outputs': '/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_outputs/en-ar-1.pt_train.tok.out',
-			'rankings': {
-				0: {
-					'activations': [
-							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_10ktrain.tok.pt',
-							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-2.pt_10ktrain.tok.pt',
-							'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-3.pt_10ktrain.tok.pt'
-						],
-					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/cross_correlations/en-ar-10k-activations.json'
-				},
-				1: {
-					'activations': [
-						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_10ktrain.tok.pt',
-					],
-					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_POS/en-ar-1.pt_10ktrain.tok/top_neurons.json'
-				},
-				2: {
-					'activations': [
-						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_10ktrain.tok.pt',
-					],
-					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/univariate_POS/en-ar-1.pt_10ktrain.tok.json'
-				},
-				3: {
-					'activations': [
-						'/data/sls/qcri/mt/work/NeuroDissection/test_data/decoded_activations/en-ar-1.pt_10ktrain.tok.pt',
-					],
-					'ranking': '/data/sls/qcri/mt/work/NeuroDissection/test_data/linguistic_correlations_SEM/en-ar-1.pt_14ktrain.tok/top_neurons.json'
-				},
-			}
-		}
-	}
-}
+db = None
 
 # Sessions data
 sessions = {}
 
 def load_session_data(project_id):
-	model_path = database[project_id]['modelPath']
-	text_path = database[project_id]['textPath']
-	store_paths = database[project_id]['store']
+	project = database.Project.get(database.Project.id == uuid.UUID(project_id))
+	rankings = []
+	for ranking in database.Ranking.select().join(database.Project).where(database.Ranking.project == project.id):
+		rankings.append({
+			'id': ranking.id,
+			'type': ranking.type,
+			'name': ranking.name,
+			'crossModelPaths': ranking.crossModelPaths,
+			'tokensPath': ranking.tokensPath,
+			'labelsPath': ranking.labelsPath,
+			'store': ranking.store
+		})
+	project_struct = {
+		'id': project.id,
+		'projectName': project.projectName,
+		'creationDate': project.creationDate,
+		'modelPath': project.modelPath,
+		'textPath': project.textPath,
+		'mtTestPath': project.mtTestPath,
+		'mtReferencePath': project.mtReferencePath,
+		'outputStyler': project.outputStyler,
+		'store': project.store,
+		'rankings': rankings
+	}
+	model_path = project_struct['modelPath']
+	text_path = project_struct['textPath']
+	store_paths = project_struct['store']
 
 	print("Loading activations...")
 	raw_activations_path = store_paths['activations']
@@ -233,10 +114,10 @@ def load_session_data(project_id):
 
 	print("Loading rankings...")
 	rankings = []
-	for ranking in database[project_id]['rankings']:
+	for ranking in project_struct['rankings']:
 		if ranking['type'] == "cross-model":
 			lang_pair = model_path.split('/')[-1][:5]
-			correlations_path = store_paths['rankings'][ranking['id']]['ranking']
+			correlations_path = ranking['store']['ranking']
 			with open(correlations_path, 'r') as fp:
 				correlations = json.load(fp)
 			rankings.append({
@@ -244,7 +125,7 @@ def load_session_data(project_id):
 				'ranking': [x[0] for x in correlations[lang_pair + '-1']]
 			})
 		if ranking['type'] == "task-specific":
-			results_path = store_paths['rankings'][ranking['id']]['ranking']
+			results_path = ranking['store']['ranking']
 			with open(results_path, 'r') as fp:
 				top_neurons = json.load(fp)
 			
@@ -261,7 +142,7 @@ def load_session_data(project_id):
 				'sub_rankings': sub_rankings
 			})
 		if ranking['type'] == "univariate":
-			results_path = store_paths['rankings'][ranking['id']]['ranking']
+			results_path = ranking['store']['ranking']
 			with open(results_path, 'r') as fp:
 				top_neurons = json.load(fp)
 			
@@ -292,7 +173,30 @@ def load_session_data(project_id):
 # a route where we will display a welcome message via an HTML template
 @app.route("/")
 def index():
-	return render_template('index.html', projects=[database[x] for x in sorted(database, key=lambda p: database[p]['creationDate'], reverse=True)])
+	projects = []
+	for project in database.Project.select().order_by(database.Project.creationDate.desc()):
+		rankings = []
+		for ranking in database.Ranking.select().join(database.Project).where(database.Ranking.project == project.id):
+			rankings.append({
+				'id': ranking.id,
+				'type': ranking.type,
+				'name': ranking.name,
+				'crossModelPaths': ranking.crossModelPaths,
+				'tokensPath': ranking.tokensPath,
+				'labelsPath': ranking.labelsPath
+			})
+		projects.append({
+			'id': project.id,
+			'projectName': project.projectName,
+			'creationDate': project.creationDate,
+			'modelPath': project.modelPath,
+			'textPath': project.textPath,
+			'mtTestPath': project.mtTestPath,
+			'mtReferencePath': project.mtReferencePath,
+			'outputStyler': project.outputStyler,
+			'rankings': rankings
+		})
+	return render_template('index.html', projects=projects)
 
 @app.route('/img/<path:filename>')
 def serve_imgs(filename):
@@ -307,15 +211,35 @@ def serve_js(filename):
 def analyze():
 	project_id = request.args.get('project')
 
-	if project_id not in database:
-		# Lead to error page
-		return render_template('index.html')
+	try:
+		project = database.Project.get(database.Project.id == uuid.UUID(project_id))
+		print(project)
+		rankings = []
+		for ranking in database.Ranking.select().join(database.Project).where(database.Ranking.project == project.id):
+			rankings.append({
+				'id': ranking.id,
+				'type': ranking.type,
+				'name': ranking.name,
+				'crossModelPaths': ranking.crossModelPaths,
+				'tokensPath': ranking.tokensPath,
+				'labelsPath': ranking.labelsPath
+			})
+		project_struct = {
+			'id': project.id,
+			'projectName': project.projectName,
+			'creationDate': project.creationDate,
+			'modelPath': project.modelPath,
+			'textPath': project.textPath,
+			'mtTestPath': project.mtTestPath,
+			'mtReferencePath': project.mtReferencePath,
+			'outputStyler': project.outputStyler,
+			'rankings': rankings
+		}
 
-	# if project_id not in sessions:
-	# 	load_session_data(project_id)
-
-	project_info = database[project_id]
-	return render_template('analyze.html', project_info=project_info)
+		return render_template('analyze.html', project_info=project_struct)
+	except DoesNotExist:
+		return render_template('error.html')
+	
 
 @app.route("/initializeProject", methods=['POST'])
 def initialize_project():
@@ -421,5 +345,6 @@ def get_top_words():
 		})
 
 # run the application
-if __name__ == "__main__":  
-	app.run(host="0.0.0.0", port="5001", debug=True)
+if __name__ == "__main__":
+	db = database.init()
+	app.run(host="0.0.0.0", port="5000", debug=True)
