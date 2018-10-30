@@ -20,7 +20,7 @@ def listify(x, norm=1):
 		return [listify(y, norm=norm) for y in x]
 	else:
 		return x
- 
+
 # convert nested list of lists / tensors
 # to a flat element stream
 def flatten(x):
@@ -31,7 +31,6 @@ def flatten(x):
 			yield from flatten(y)
 	else:
 		yield x
-
 
 # creates a Flask application, named app
 app = Flask(__name__, template_folder="client/dist")
@@ -90,6 +89,8 @@ def load_session_data(project_id):
 	activations = np.concatenate(activations)
 	means = np.mean(activations, axis=0)
 	stds = np.std(activations, axis=0)
+	mins = np.min(activations, axis=0)
+	maxs = np.max(activations, axis=0)
 
 	print("Loading source text...")
 	source_path = text_path
@@ -120,6 +121,7 @@ def load_session_data(project_id):
 			correlations_path = ranking['store']['ranking']
 			with open(correlations_path, 'r') as fp:
 				correlations = json.load(fp)
+
 			rankings.append({
 				'name': ranking['name'],
 				'ranking': [x[0] for x in correlations[lang_pair + '-1']]
@@ -164,6 +166,8 @@ def load_session_data(project_id):
 		'norm_activations': norm_activations,
 		'means': means,
 		'stds': stds,
+		'mins': mins,
+		'maxs': maxs,
 		'source_text': source_text,
 		'pred_text': pred_text,
 		'rankings': rankings,
@@ -315,6 +319,8 @@ def get_top_words():
 		tokens = project_data['source_tokens']
 		mean = project_data['means'][neuron]
 		std = project_data['stds'][neuron]
+		min_v = project_data['mins'][neuron]
+		max_v = project_data['maxs'][neuron]
 
 		individual_token_sums = {}
 		individual_token_counts = {}
@@ -339,6 +345,8 @@ def get_top_words():
 
 		return jsonify({
 			'neuron': neuron,
+			'min': min_v,
+			'max': max_v,
 			'mean': mean,
 			'std': std,
 			'top_words': top_results
