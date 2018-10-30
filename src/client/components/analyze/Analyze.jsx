@@ -854,6 +854,8 @@ class App extends React.Component {
 	}
 
 	handleChangeMode(mode) {
+		if (mode == 'manipulation')
+			window.location.href = '/manipulate?project=' + this.state.project_info.id;
 		this.setState({'active_mode': mode});
 	}
 

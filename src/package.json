@@ -12,6 +12,7 @@
   "dependencies": {
     "@material-ui/core": "^3.1.0",
     "@material-ui/icons": "^3.0.1",
+    "@material-ui/lab": "^3.0.0-alpha.22",
     "@material/checkbox": "^0.39.3",
     "@material/dialog": "^0.39.3",
     "@material/form-field": "^0.39.3",
@@ -31,6 +32,7 @@
     "react-addons-css-transition-group": "^15.6.2",
     "react-chartjs": "^1.2.0",
     "react-dom": "^16.5.1",
+    "react-rangeslider": "^2.2.0",
     "remove": "^0.1.5"
   },
   "devDependencies": {

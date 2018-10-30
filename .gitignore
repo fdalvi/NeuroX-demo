@@ -6,3 +6,11 @@ src/node_modules
 
 # Built files
 src/client/dist/
+
+# Temporary files
+tmp/
+
+# Database
+*.db
+*.db-shm
+*.db-wal

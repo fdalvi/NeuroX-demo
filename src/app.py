@@ -4,11 +4,15 @@ from flask import request, jsonify, send_from_directory
 
 import server.database as database
 import uuid
+import multiprocessing as mp
 from peewee import *
 
 import json
 import numpy as np
 import torch
+
+import sys
+sys.path.append("external/opennmt-inspection")
 
 # adapted from anthony's code
 # normalize a nested list of values
@@ -161,6 +165,16 @@ def load_session_data(project_id):
 				'sub_rankings': sub_rankings
 			})
 
+		# Common across all rankings
+		forward_ablation_path = ranking['store']['ablation_forward']
+		with open(forward_ablation_path, 'r') as fp:
+			forward_ablation_results = list(map(float, fp.read().strip().split(" ")))
+		backward_ablation_path = ranking['store']['ablation_backward']
+		with open(backward_ablation_path, 'r') as fp:
+			backward_ablation_results = list(map(float, fp.read().strip().split(" ")))
+		rankings[-1]['forward_ablation_results'] = forward_ablation_results
+		rankings[-1]['backward_ablation_results'] = backward_ablation_results
+
 	sessions[project_id] = {
 		'activations': activations,
 		'norm_activations': norm_activations,
@@ -171,7 +185,9 @@ def load_session_data(project_id):
 		'source_text': source_text,
 		'pred_text': pred_text,
 		'rankings': rankings,
-		'source_tokens': source_tokens
+		'source_tokens': source_tokens,
+		'manipulator': None,
+		'project_info': project_struct
 	}
 
 # a route where we will display a welcome message via an HTML template
@@ -241,6 +257,39 @@ def analyze():
 		}
 
 		return render_template('analyze.html', project_info=project_struct)
+	except DoesNotExist:
+		return render_template('error.html')
+
+@app.route("/manipulate")
+def manipulate():
+	project_id = request.args.get('project')
+
+	try:
+		project = database.Project.get(database.Project.id == uuid.UUID(project_id))
+		print(project)
+		rankings = []
+		for ranking in database.Ranking.select().join(database.Project).where(database.Ranking.project == project.id):
+			rankings.append({
+				'id': ranking.id,
+				'type': ranking.type,
+				'name': ranking.name,
+				'crossModelPaths': ranking.crossModelPaths,
+				'tokensPath': ranking.tokensPath,
+				'labelsPath': ranking.labelsPath
+			})
+		project_struct = {
+			'id': project.id,
+			'projectName': project.projectName,
+			'creationDate': project.creationDate,
+			'modelPath': project.modelPath,
+			'textPath': project.textPath,
+			'mtTestPath': project.mtTestPath,
+			'mtReferencePath': project.mtReferencePath,
+			'outputStyler': project.outputStyler,
+			'rankings': rankings
+		}
+
+		return render_template('manipulate.html', project_info=project_struct)
 	except DoesNotExist:
 		return render_template('error.html')
 	
@@ -352,7 +401,82 @@ def get_top_words():
 			'top_words': top_results
 		})
 
+@app.route("/getNeuronStats", methods=["POST"])
+def get_neuron_stats():
+	project_id = request.json['project_id']
+	neuron = int(request.json['neuron'])
+
+	if project_id not in sessions:
+		return jsonify({'success': False})
+	else:
+		project_data = sessions[project_id]
+		mean = project_data['means'][neuron]
+		std = project_data['stds'][neuron]
+		min_v = project_data['mins'][neuron]
+		max_v = project_data['maxs'][neuron]
+
+		return jsonify({
+			'neuron': neuron,
+			'min': min_v,
+			'max': max_v,
+			'mean': mean,
+			'std': std
+		})
+
+def manipulate_and_translate(request_q, reply_q, model_path, text_path):
+	from online_translator_v2 import init_model, translate
+
+	translator = init_model(model_path, use_gpu=True)
+	print("Model Loading complete...")
+
+	sentences = []
+	with open(text_path) as fp:
+		for line in fp:
+			sentences.append(line.strip())
+
+	while True:
+		modifications = request_q.get()
+		print("Modifying neurons: ", modifications)
+		output, dumps = translate(translator, sentences, modifications)
+		reply_q.put(output)
+
+@app.route("/startModifiedTranslation", methods=["POST"])
+def start_modified_translation():
+	project_id = request.json['project_id']
+	if project_id not in sessions:
+		return jsonify({'success': False, 'error': "Project not loaded!"})
+
+	if sessions[project_id]['manipulator'] == None:
+		print("Init-ing translator")
+		request_q = mp.Queue()
+		reply_q = mp.Queue()
+		p = mp.Process(target=manipulate_and_translate,
+			args=(request_q, reply_q,
+					sessions[project_id]['project_info']['modelPath'],
+					sessions[project_id]['project_info']['textPath']))
+		p.start()
+		sessions[project_id]['manipulator'] = (p, request_q, reply_q)
+
+	p, request_q, reply_q = sessions[project_id]['manipulator']
+
+	return jsonify({'success': True, 'message': "Translator is running."})
+
+@app.route("/getModifiedTranslation", methods=["POST"])
+def get_modified_translation():
+	project_id = request.json['project_id']
+	neurons = request.json['neurons']
+
+	p, request_q, reply_q = sessions[project_id]['manipulator']
+	request_q.put(neurons)
+
+	modified_translations = reply_q.get()
+	modified_translations = [line.strip().split(' ') for line in modified_translations]
+
+	return jsonify({'success': True, 'message': modified_translations})
+
+
 # run the application
 if __name__ == "__main__":
+	mp.set_start_method('spawn')
 	db = database.init()
 	app.run(host="0.0.0.0", port="5000", debug=True)

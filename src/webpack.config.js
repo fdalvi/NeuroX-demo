@@ -26,7 +26,8 @@ function isExternal(module) {
 var config = {
 	entry: {
 		index: APP_DIR + '/index/Index.jsx',
-		analyze: APP_DIR + '/analyze/Analyze.jsx'
+		analyze: APP_DIR + '/analyze/Analyze.jsx',
+		manipulate: APP_DIR + '/manipulate/Manipulate.jsx'
 	},
 	resolve: {
 		extensions: ['.json', '.jsx', '.js', '.scss', '.css']
@@ -98,6 +99,16 @@ var config = {
 			filename: 'analyze.html',
 			template: './client/analyze.html',
 			chunks: ['vendor', 'analyze']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'manipulate.html',
+			template: './client/manipulate.html',
+			chunks: ['vendor', 'manipulate']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'error.html',
+			template: './client/error.html',
+			chunks: []
 		}),
 		new webpack.LoaderOptionsPlugin({
 			options: {
