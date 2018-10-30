@@ -58,7 +58,7 @@ def main():
     assert fmt != FORMAT_UNKNOWN, "Activations are not extracted from OpenNMT-py or seq2seq-attn"
 
     activations = {}
-
+    num_neurons = 500
     for fname in tqdm(network_filenames):
         network_name = os.path.split(fname)[1]
         network_name = network_name[:network_name.index('.')]
@@ -72,6 +72,8 @@ def main():
 
         # Load as 4000x(sentence_length)x500 matrix
         activations[network_name] = current_activations
+        num_neurons = current_activations.size(1)
+        print(num_neurons)
 
     '''
     Correlation-finding code. This should probably not need to be modified for ordinary use.
@@ -113,10 +115,10 @@ def main():
 
     # Get all "best correlation pairs"
     clusters = {network: {} for network in activations}
-    for network, neuron in tqdm(p(activations, range(500)), desc='clusters', total=len(activations)*500):
+    for network, neuron in tqdm(p(activations, range(num_neurons)), desc='clusters', total=len(activations)*num_neurons):
         clusters[network][neuron] = {
             other: max(
-                range(500),
+                range(num_neurons),
                 key = lambda i: abs(correlations[network][other][neuron][i])
             ) for other in correlations[network]
         }
@@ -128,7 +130,7 @@ def main():
     # in another network.
     for network in tqdm(activations, desc='annotation'):
         neuron_sort = sorted(
-            range(500),
+            range(num_neurons),
             key = lambda i: -args.pool(
                 abs(correlations[network][other][i][clusters[network][i][other]])
                 for other in clusters[network][i]
