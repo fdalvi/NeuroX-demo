@@ -10,6 +10,7 @@ import "./css/manipulate.css";
 import "./css/vis_elements.css";
 
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 
@@ -23,6 +24,9 @@ import Divider from '@material-ui/core/Divider';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
+
+import WrapTextIcon from '@material-ui/icons/WrapText';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const theme = createMuiTheme({
 	palette: {
@@ -63,7 +67,7 @@ class Sentence extends React.Component {
 	render() {
 		return (
 			<div>
-				<span style={this.props.style} className={"sentence"}>
+				<span style={this.props.style} className={"sentence " + (this.props.wrap?"wrap":"nowrap")}>
 					<span className="item-name">{this.props.name}</span>
 					{this.props.tokens.map(token => <Token token={token}/>)}
 				</span>
@@ -80,7 +84,7 @@ class DiffSentence extends React.Component {
 	render() {
 		return (
 			<div>
-				<span style={this.props.style} className={"sentence"}>
+				<span style={this.props.style} className={"sentence " + (this.props.wrap?"wrap":"nowrap")}>
 					<span className="item-name">{this.props.name}</span>
 					{this.props.tokens.map(token_info => <Token token={token_info[0]} activation={token_info[1]}/>)}
 				</span>
@@ -495,6 +499,7 @@ class Manipulation extends React.Component {
 		super(props);
 
 		this.state = {
+			'wrap': true,
 			'sentences': [],
 			'rankings': [],
 			'selected_ranking': -1,
@@ -613,9 +618,9 @@ class Manipulation extends React.Component {
 		for (var i = 0; i < this.state.sentences.length; i++) {
 			sentences.push(
 				<div style={{margin: '7px', borderBottom: '1px dashed #ccc'}}>
-					<Sentence name="source" tokens={this.state.sentences[i].source} style={{direction: 'ltr', fontFamily: 'monospace'}}/>
-					<Sentence name="translation" tokens={this.state.sentences[i].pred} style={this.props.outputStyler}/>
-					{this.state.sentences[i]["mods"].map((e, j) => <DiffSentence name={"Set " + (j+1)} tokens={this.state.sentences[i]["mods"][j]} style={this.props.outputStyler}/> )}
+					<Sentence name="source" tokens={this.state.sentences[i].source} style={{direction: 'ltr', fontFamily: 'monospace'}} wrap={this.state.wrap}/>
+					<Sentence name="translation" tokens={this.state.sentences[i].pred} style={this.props.outputStyler} wrap={this.state.wrap}/>
+					{this.state.sentences[i]["mods"].map((e, j) => <DiffSentence name={"Set " + (j+1)} tokens={this.state.sentences[i]["mods"][j]} style={this.props.outputStyler} wrap={this.state.wrap}/> )}
 				</div>
 			)
 		}
@@ -649,19 +654,26 @@ class Manipulation extends React.Component {
 		return (
 			<div id="page-content">
 				<div id="sentences-container">
-					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
-						<Typography variant="button">
-							Translations
-						</Typography>
-					</h1>
-					{	this.state.loadingSentences ? (
-						<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
-							<div style={{marginLeft: '15%', width: '70%'}}>
-								<LinearProgress/>
-							</div>
-						</div>):""
-					}
-					{sentences}
+					<div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+						<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem', flexGrow: '2'}}>
+							<Typography variant="button"> Translations </Typography>
+						</h1>
+				        <Tooltip title="Wrap Sentences">
+				        	<IconButton color={this.state.wrap?"primary":""} onClick={() => this.setState({wrap: !this.state.wrap})}>
+				        		<WrapTextIcon/>
+				        	</IconButton>
+				        </Tooltip>
+					</div>
+					<div style={{overflow: 'scroll', height: 'calc(100% - 50px)'}}>
+						{	this.state.loadingSentences ? (
+							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+								<div style={{marginLeft: '15%', width: '70%'}}>
+									<LinearProgress/>
+								</div>
+							</div>):""
+						}
+						{sentences}
+					</div>
 				</div>
 				<div id="manipulation-controls-container">
 					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>

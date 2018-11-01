@@ -1,13 +1,20 @@
 .sentence {
 	display: flex;
 	flex-direction: row;
-	flex-wrap: wrap;
 
 	margin: 2px;
 }
 
 .sentence-spacer {
 	margin: 1px;
+}
+
+.wrap {
+	flex-wrap: wrap;
+}
+
+.nowrap {
+	flex-wrap: nowrap;
 }
 
 .token {
