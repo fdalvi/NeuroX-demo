@@ -22,6 +22,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -277,24 +278,42 @@ class ManipulationControls extends React.Component {
 			manipulationInProgess: false
 		};
 
-		this.handleAddSet = this.handleAddSet.bind(this);
-		this.handleSelectSet = this.handleSelectSet.bind(this);
+		this.handleSetAdd = this.handleSetAdd.bind(this);
+		this.handleSetSelect = this.handleSetSelect.bind(this);
+		this.handleSetDelete = this.handleSetDelete.bind(this);
 		this.handleNeuronAdd = this.handleNeuronAdd.bind(this);
 		this.handleNeuronActivationChange = this.handleNeuronActivationChange.bind(this);
 		this.handleManipulate = this.handleManipulate.bind(this);
 	}
 
-	handleAddSet() {
+	handleSetAdd() {
 		let current_sets = this.state.sets;
 		current_sets = update(current_sets, {$push: [[]]});
 		this.setState({sets: current_sets});
 	}
 
-	handleSelectSet(index) {
+	handleSetSelect(index) {
 		if (this.state.manipulationInProgess) {
 			return;
 		}
 		this.setState({selectedIdx: index})
+	}
+
+	handleSetDelete() {
+		let current_sets = this.state.sets;
+		let selectedIdx = this.state.selectedIdx;
+		current_sets = update(current_sets, {$splice: [[selectedIdx, 1]]})
+
+		// Handle deletion of last set
+		if (selectedIdx == current_sets.length) {
+			selectedIdx -= 1;
+		}
+
+		// Also delete modification outputs
+		this.props.onSetDelete(this.state.selectedIdx);
+
+		// Update state
+		this.setState({sets: current_sets, selectedIdx: selectedIdx});
 	}
 
 	handleNeuronAdd(neuron) {
@@ -350,10 +369,9 @@ class ManipulationControls extends React.Component {
 		xhr.onload = function(e) {
 			self.setState({manipulationInProgess: false});
 			let response = JSON.parse(xhr.response);
-			let set_name = "Set " + (self.state.selectedIdx+1).toString();
 			// TODO: Robustness
 
-			self.props.onManipulation(set_name, response['message']);
+			self.props.onManipulation(self.state.selectedIdx, response['message']);
 		}
 		
 	}
@@ -362,14 +380,14 @@ class ManipulationControls extends React.Component {
 		let list_elements = this.state.sets.map((s, i) => (
 				<ListItem key={i} button
 					selected={this.state.selectedIdx === i}
-					onClick={() => this.handleSelectSet(i)}>
+					onClick={() => this.handleSetSelect(i)}>
 					<ListItemText primary={`Manipulation Set ${i + 1}`} />
 				</ListItem>
 			)
 		)
 
 		let neuron_set_elements = (
-			<span 
+			<span
 				className="mdc-typography--body1"
 				style={{marginLeft: '10px', color: '#555'}}>
 				Select at least one neuron to manipulate the model
@@ -402,7 +420,7 @@ class ManipulationControls extends React.Component {
 		return (
 			<div id="manipulation-controls">
 				<List component="nav" style={{flexGrow: '0', flexShrink: '0', overflow: 'scroll'}}>
-					<ListItem button onClick={this.handleAddSet}>
+					<ListItem button onClick={this.handleSetAdd}>
 						<ListItemIcon>
 							<AddIcon />
 						</ListItemIcon>
@@ -415,12 +433,31 @@ class ManipulationControls extends React.Component {
 					{neuron_set_elements}
 					{neuron_add_element}
 				</div>
-				<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+				<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '10px'}}>
+					<span
+						className="mdc-typography--button"
+						style={{marginLeft: '10px', color: '#555'}}>
+						Legend
+					</span>
+					<div className="legend">
+						<div className="legend-entry mdc-typography--body1"> Minimum </div>
+						<div className="legend-entry mdc-typography--body1"> Mean </div>
+						<div className="legend-entry mdc-typography--body1"> Maximum </div>
+					</div>
 					<Button onClick={this.handleManipulate}
 						variant={"raised"}
 						color="primary"
-						disabled={this.state.manipulationInProgess || this.state.sets[this.state.selectedIdx].length == 0}>
+						disabled={this.state.manipulationInProgess || this.state.sets[this.state.selectedIdx].length == 0}
+						style={{margin: "5px", width: "120px", height: "40px"}}>
 						Manipulate
+					</Button>
+					<Button onClick={this.handleSetDelete}
+						variant={"raised"}
+						color="outline"
+						disabled={this.state.manipulationInProgess || this.state.sets.length <= 1}
+						style={{margin: "5px", width: "120px", height: "40px"}}>
+						Delete
+						<DeleteIcon />
 					</Button>
 					{this.state.manipulationInProgess?<CircularProgress />:""}
 				</div>
@@ -445,6 +482,7 @@ class Manipulation extends React.Component {
 		this.handleRankingSelect = this.handleRankingSelect.bind(this);
 		this.handleNeuronClick = this.handleNeuronClick.bind(this);
 		this.handleUpdateSentences = this.handleUpdateSentences.bind(this);
+		this.handleDeleteSet = this.handleDeleteSet.bind(this);
 	}
 
 	componentDidMount() {
@@ -465,7 +503,8 @@ class Manipulation extends React.Component {
 			for (var i = 0; i < source.length; i++) {
 				sentences.push({
 					'source': source[i],
-					'pred': pred[i]
+					'pred': pred[i],
+					'mods': []
 				})
 			}
 
@@ -510,20 +549,22 @@ class Manipulation extends React.Component {
 		}))
 	}
 
-	handleUpdateSentences(set, manipulated_sentences) {
+	handleUpdateSentences(setIdx, manipulated_sentences) {
 		let current_sentences = this.state.sentences;
 
-		// let new_sentences = []
-		// for (var i = 0; i < current_sentences.length; i++) {
-		// 	let new_object = {...current_sentences[i]};
-		// 	new_object[set] = manipulated_sentences[i];
-		// 	new_sentences.push(new_object);
-		// }
-
-		// // Use immutability here
 		for (var i = 0; i < current_sentences.length; i++) {
 			let new_sentence = manipulated_sentences[i].map(token => [token, (current_sentences[i]['pred'].indexOf(token) == -1)?-0.5:0])
-			current_sentences = update(current_sentences, {[i]: {[set]: {$set: new_sentence}}});
+			current_sentences = update(current_sentences, {[i]: {mods: {[setIdx]: {$set: new_sentence}}}});
+		}
+
+		this.setState({sentences: current_sentences});
+	}
+
+	handleDeleteSet(setIdx) {
+		let current_sentences = this.state.sentences;
+
+		for (var i = 0; i < current_sentences.length; i++) {
+			current_sentences = update(current_sentences, {[i]: {mods: {$splice: [[setIdx, 1]]}}});
 		}
 
 		this.setState({sentences: current_sentences});
@@ -546,12 +587,11 @@ class Manipulation extends React.Component {
 		let sentences = [];
 
 		for (var i = 0; i < this.state.sentences.length; i++) {
-			let manipulation_sets = Object.keys(this.state.sentences[i]).length - 2;
 			sentences.push(
 				<div style={{margin: '7px', borderBottom: '1px dashed #ccc'}}>
 					<Sentence name="source" tokens={this.state.sentences[i].source} style={{direction: 'ltr', fontFamily: 'monospace'}}/>
 					<Sentence name="translation" tokens={this.state.sentences[i].pred} style={this.props.outputStyler}/>
-					{[...Array(manipulation_sets).keys()].map((e, j) => <DiffSentence name={"Set " + (j+1)} tokens={this.state.sentences[i]["Set " + (j+1)]} style={this.props.outputStyler}/> )}
+					{this.state.sentences[i]["mods"].map((e, j) => <DiffSentence name={"Set " + (j+1)} tokens={this.state.sentences[i]["mods"][j]} style={this.props.outputStyler}/> )}
 				</div>
 			)
 		}
@@ -606,7 +646,8 @@ class Manipulation extends React.Component {
 					
 					<ManipulationControls
 						selected_neuron={this.state.selected_neuron}
-						onManipulation={this.handleUpdateSentences}/>
+						onManipulation={this.handleUpdateSentences}
+						onSetDelete={this.handleDeleteSet}/>
 				</div>
 				<div id="rankings-container">
 					<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}

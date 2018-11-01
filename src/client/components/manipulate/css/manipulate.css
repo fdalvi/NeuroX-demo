@@ -111,7 +111,7 @@ body {
     flex-direction: column;
     margin-right: 10px;
 
-    align-self: flex-start;
+    align-self: center;
 }
 
 .activation-value {
@@ -134,7 +134,15 @@ body {
 
 .neuron-set {
     flex-grow: 2;
+    
     padding-left: 20px;
+    padding-right: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-left: 2px solid #b5b5b5;
+    border-right: 2px solid #b5b5b5;
+    margin-bottom: 10px;
+
     align-items: center;
     align-content: flex-start;
 
@@ -255,14 +263,21 @@ body {
 
 .rangeslider-horizontal .rangeslider__labels .rangeslider__label-item:before {
     content: "";
-    width: 2px;
+    /*width: 2px;
     height: 10px;
-    background: #9447e2;
+    background: #9447e2;*/
     position: absolute;
     left: 50%;
     top: 0%;
-    transform: translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
     z-index: -1;
+
+    /* triangle */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid rgb(41, 140, 0);
 }
 
 .rangeslider {
@@ -277,4 +292,45 @@ body {
     font-family: Roboto;
     font-size: 12px;
     line-height: 30px;
+}
+
+/* Max */
+.rangeslider-horizontal .rangeslider__labels .rangeslider__label-item:nth-child(1):before {
+    border-bottom-color: rgb(98, 90, 255);
+}
+/* Min */
+.rangeslider-horizontal .rangeslider__labels .rangeslider__label-item:nth-child(3):before {
+    border-bottom-color: rgb(255, 90, 90);
+}
+.rangeslider-horizontal .rangeslider__labels .rangeslider__label-item {
+    color: white;
+    line-height: 0px;
+    font-size: 0px;
+}
+
+.legend {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.legend-entry:before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: -25px;
+}
+
+.legend-entry:nth-child(1):before {
+    background-color: rgb(255, 90, 90);
+
+}
+
+.legend-entry:nth-child(2):before {
+    background-color: rgb(41, 140, 0);
+    
+}
+
+.legend-entry:nth-child(3):before {
+    background-color: rgb(98, 90, 255);
 }
