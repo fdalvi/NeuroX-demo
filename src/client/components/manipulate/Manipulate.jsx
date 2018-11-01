@@ -5,14 +5,13 @@ import update from 'immutability-helper';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
-import "@material/typography/mdc-typography";
+import Typography from '@material-ui/core/Typography';
 import "./css/manipulate.css";
 import "./css/vis_elements.css";
 
 import Button from '@material-ui/core/Button';
 
-import "@material/linear-progress/mdc-linear-progress";
-import {MDCLinearProgress} from '@material/linear-progress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 
@@ -23,8 +22,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 const theme = createMuiTheme({
 	palette: {
@@ -114,10 +111,12 @@ class NeuronList extends React.Component {
 	render() {
 		if (this.props.neurons.length == 0) {
 			return (
+
 				<div id="neuron-list" 
-					className="mdc-typography--body1"
 					style={{marginLeft: '10px', color: '#555'}}>
-					Select a ranking to see the neuron ordering
+					<Typography variant="body1">
+						Select a ranking to see the neuron ordering
+					</Typography>
 				</div>
 			);
 		} else {
@@ -170,7 +169,7 @@ class NeuronInformation extends React.Component {
 	}
 
 	render() {
-		let messageClassNames = "mdc-typography--body1"
+		let messageClassNames = ""
 		let contentClassNames = ""
 		if (this.props.neuron == undefined) {
 			contentClassNames = "hidden";
@@ -182,14 +181,14 @@ class NeuronInformation extends React.Component {
 		let neuron_information= this.state.neuron_information;
 		if (neuron_information != undefined) {
 			information_div = <div id="neuron-specific-info">
-				<span className="mdc-typography--caption"> Neuron #: </span>
-				<span className="mdc-typography--body1">{neuron_information.neuron} </span>
-				<span className="mdc-typography--caption"> Mean: </span>
-				<span className="mdc-typography--body1">{Number.parseFloat(neuron_information.mean).toFixed(3)} </span>
-				<span className="mdc-typography--caption"> Standard Deviation: </span>
-				<span className="mdc-typography--body1"> {Number.parseFloat(neuron_information.std).toFixed(3)} </span>
+				<Typography variant="caption"> Neuron #: </Typography>
+				<Typography variant="body1" gutterBottom> {neuron_information.neuron} </Typography>
+				<Typography variant="caption"> Mean: </Typography>
+				<Typography variant="body1" gutterBottom> {Number.parseFloat(neuron_information.mean).toFixed(3)} </Typography>
+				<Typography variant="caption"> Standard Deviation: </Typography>
+				<Typography variant="body1" gutterBottom>  {Number.parseFloat(neuron_information.std).toFixed(3)} </Typography>
 
-				<span className="mdc-typography--caption"> Top words: </span>
+				<Typography variant="caption"> Top words: </Typography>
 				{neuron_information.top_words.map(x => <Token token={x.token} activation={x.activation}/>)}
 			</div>
 		}
@@ -198,7 +197,9 @@ class NeuronInformation extends React.Component {
 			<div id="neuron-list">
 				<div className={messageClassNames}
 					style={{marginLeft: '10px', color: '#555'}}>
-					Select at least one neuron
+					<Typography variant="body1">
+						Select at least one neuron
+					</Typography>
 				</div>
 				<div style={{width: "100%"}} className={contentClassNames}>
 					{information_div}
@@ -260,7 +261,7 @@ class NeuronAdder extends React.Component {
 				onClick={() => this.props.onNeuronSetAdd(this.props.neuron)}>
 				<Neuron position={this.props.neuron} 
 						onClick={(e) => {}}/>
-				<div style={{fontFamily: 'Roboto', textAlign: 'center', alignSelf: 'center'}}>
+				<div style={{fontFamily: 'Roboto', fontSize: '0.8rem', textAlign: 'center', alignSelf: 'center'}}>
 					Click to add neuron to set
         		</div>
 			</div>
@@ -381,17 +382,19 @@ class ManipulationControls extends React.Component {
 				<ListItem key={i} button
 					selected={this.state.selectedIdx === i}
 					onClick={() => this.handleSetSelect(i)}>
-					<ListItemText primary={`Manipulation Set ${i + 1}`} />
+					<ListItemText
+						primary={`Manipulation Set ${i + 1}`}
+						primaryTypographyProps={{style: {fontSize: '0.9rem'}}}/>
 				</ListItem>
 			)
 		)
 
 		let neuron_set_elements = (
-			<span
-				className="mdc-typography--body1"
-				style={{marginLeft: '10px', color: '#555'}}>
-				Select at least one neuron to manipulate the model
-			</span>
+			<div style={{marginLeft: '10px', color: '#555'}}>
+				<Typography variant="body1">
+					Select at least one neuron to manipulate the model
+				</Typography>
+			</div>
 		)
 
 		if (this.state.sets[this.state.selectedIdx].length > 0 || this.props.selected_neuron != undefined) {
@@ -424,7 +427,7 @@ class ManipulationControls extends React.Component {
 						<ListItemIcon>
 							<AddIcon />
 						</ListItemIcon>
-						<ListItemText primary="New Set" />
+						<ListItemText primary="New Set" primaryTypographyProps={{style: {fontSize: '0.9rem'}}}/>
 					</ListItem>
 					<Divider />
 					{list_elements}
@@ -434,32 +437,32 @@ class ManipulationControls extends React.Component {
 					{neuron_add_element}
 				</div>
 				<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '10px'}}>
-					<span
-						className="mdc-typography--button"
-						style={{marginLeft: '10px', color: '#555'}}>
-						Legend
-					</span>
+					<div style={{color: '#555'}}>
+						<Typography variant="button" gutterBottom>
+							Legend
+						</Typography>
+					</div>
 					<div className="legend">
-						<div className="legend-entry mdc-typography--body1"> Minimum </div>
-						<div className="legend-entry mdc-typography--body1"> Mean </div>
-						<div className="legend-entry mdc-typography--body1"> Maximum </div>
+						<div className="legend-entry"> <Typography variant="body1"> Minimum </Typography> </div>
+						<div className="legend-entry"> <Typography variant="body1"> Mean </Typography> </div>
+						<div className="legend-entry"> <Typography variant="body1"> Maximum </Typography> </div>
 					</div>
 					<Button onClick={this.handleManipulate}
 						variant={"raised"}
 						color="primary"
 						disabled={this.state.manipulationInProgess || this.state.sets[this.state.selectedIdx].length == 0}
-						style={{margin: "5px", width: "120px", height: "40px"}}>
+						style={{margin: "5px", width: "150px", height: "40px"}}>
 						Manipulate
 					</Button>
 					<Button onClick={this.handleSetDelete}
 						variant={"raised"}
 						color="outline"
 						disabled={this.state.manipulationInProgess || this.state.sets.length <= 1}
-						style={{margin: "5px", width: "120px", height: "40px"}}>
+						style={{margin: "5px", width: "150px", height: "40px"}}>
 						Delete
 						<DeleteIcon />
 					</Button>
-					{this.state.manipulationInProgess?<CircularProgress />:""}
+					{this.state.manipulationInProgess?<div style={{width: '100%'}}><LinearProgress/></div>:""}
 				</div>
 			</div>
 		);
@@ -625,23 +628,25 @@ class Manipulation extends React.Component {
 		return (
 			<div id="page-content">
 				<div id="sentences-container">
-					<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-						className="mdc-typography--button">
-						Translations
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
+							Translations
+						</Typography>
 					</h1>
 					{	this.state.loadingSentences ? (
 						<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
-							<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-								<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+							<div style={{marginLeft: '15%', width: '70%'}}>
+								<LinearProgress/>
 							</div>
 						</div>):""
 					}
 					{sentences}
 				</div>
 				<div id="manipulation-controls-container">
-					<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-						className="mdc-typography--button">
-						Manipulation Controls
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
+							Manipulation Controls
+						</Typography>
 					</h1>
 					
 					<ManipulationControls
@@ -650,30 +655,33 @@ class Manipulation extends React.Component {
 						onSetDelete={this.handleDeleteSet}/>
 				</div>
 				<div id="rankings-container">
-					<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-						className="mdc-typography--button">
-						Rankings
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
+							Rankings
+						</Typography>
 					</h1>
 					{	this.state.loadingRankings ? (
 						<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
-							<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-								<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+							<div style={{marginLeft: '15%', width: '70%'}}>
+								<LinearProgress/>
 							</div>
 						</div>):""
 					}
 					{rankings}
 				</div>
 				<div id="neurons-container">
-					<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-						className="mdc-typography--button">
-						Neuron Ordering
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
+							Neuron Ordering
+						</Typography>
 					</h1>
 					<NeuronList neurons={neurons} selected_neuron={this.state.selected_neuron} onNeuronClick={this.handleNeuronClick}/>
 				</div>
 				<div id="neuron-info-container">
-					<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-						className="mdc-typography--button">
-						Neuron Information
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
+							Neuron Information
+						</Typography>
 					</h1>
 					<NeuronInformation project_id={this.props.project_id} neuron={this.state.selected_neuron}/>
 				</div>
@@ -725,21 +733,23 @@ class App extends React.Component {
 				<MuiThemeProvider theme={theme}>
 					<div id="container">
 						<div id="page-header">
-							<h1 className="mdc-typography--headline5">
-								{this.state.project_info.projectName}
-							</h1>
-							<Button onClick={() => this.handleChangeMode('analysis')}
-								variant={this.state.active_mode != 'analysis'?"outlined":"raised"}
+							<div>
+								<Typography variant="h5">
+									{this.state.project_info.projectName}
+								</Typography>
+							</div>
+							<Button href={'/analyze?project=' + this.state.project_info.id}
+								variant="outlined"
 								color="primary">
 								Neuron Analysis
 							</Button>
 							<Button onClick={() => this.handleChangeMode('ablation')}
-								variant={this.state.active_mode != 'ablation'?"outlined":"raised"}
+								variant="outlined"
 								color="primary">
 								Model Ablation
 							</Button>
-							<Button onClick={() => this.handleChangeMode('manipulation')}
-								variant={this.state.active_mode != 'manipulation'?"outlined":"raised"}
+							<Button href=""
+								variant="raised"
 								color="primary">
 								Neuron Manipulation
 							</Button>
@@ -755,11 +765,13 @@ class App extends React.Component {
 				<MuiThemeProvider theme={theme}>
 					<div id="cloak">
 						<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>Dissection</span> </h1>
-						<div className="mdc-typography--headline6" style={{marginBottom: "30px"}}>
-							Hang on while we crunch the numbers for you...
+						<div style={{marginBottom: "30px"}}>
+							<Typography variant="h6">
+								Hang on while we crunch the numbers for you...
+							</Typography>
 						</div>
-						<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-							<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+						<div style={{width: '70%'}}>
+							<LinearProgress/>
 						</div>
 					</div>
 				</MuiThemeProvider>

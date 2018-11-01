@@ -12,6 +12,7 @@
 
 .token {
 	font-family: inherit;
+	font-size: 0.7rem;
 	padding: 6px;
 	display: inline-block;
 	white-space: nowrap;
@@ -27,10 +28,12 @@
 	white-space: pre;
 
 	font-family: monospace;
+	font-size: 0.7rem;
 }
 
 .neuron {
 	font-family: monospace;
+	font-size: 0.7rem;
 	padding: 6px;
 	display: inline-block;
 	white-space: nowrap;

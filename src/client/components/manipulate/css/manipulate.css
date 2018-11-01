@@ -1,3 +1,8 @@
+html {
+    font-family: Roboto;
+    font-size: 20px;
+}
+
 body {
     margin: 0px;
 }
@@ -33,7 +38,7 @@ body {
     flex-shrink: 0;
 }
 
-#page-header > h1 {
+#page-header > div {
     flex-grow: 2;
 }
 
@@ -90,7 +95,7 @@ body {
     display: flex;
     flex-direction: row;
 
-    height: calc(100% - 36px);
+    height: calc(100% - 54px);
     overflow: hidden;
 }
 
@@ -186,7 +191,7 @@ body {
 
 .ranking-item {
     font-family: Roboto;
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin: 0px 10px 0px 10px;
     border-bottom: 1px solid #ccc;
     padding: 5px 10px;
@@ -198,7 +203,7 @@ body {
 
 .sub-ranking-item {
     font-family: Roboto;
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin: 0px 10px 0px 10px;
     border-bottom: 1px solid #ccc;
     padding: 5px 10px;
@@ -315,10 +320,11 @@ body {
 
 .legend-entry:before {
     content: "";
-    width: 20px;
-    height: 20px;
+    width: 0.8rem;
+    height: 0.8rem;
     position: absolute;
     left: -25px;
+    transform: translateY(25%);
 }
 
 .legend-entry:nth-child(1):before {
