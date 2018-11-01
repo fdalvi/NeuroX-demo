@@ -22,6 +22,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 
 const theme = createMuiTheme({
 	palette: {
@@ -243,7 +244,9 @@ class NeuronController extends React.Component {
         		<span className="activation-value">
         			{this.props.neuron['activation'].toFixed(1)}
         		</span>
-
+				<DeleteForeverRoundedIcon
+					className="neuron-controller-delete"
+					onClick={() => this.props.onDelete(this.props.neuron['neuron'])}/>
 			</div>
 		);
 	}
@@ -283,6 +286,7 @@ class ManipulationControls extends React.Component {
 		this.handleSetSelect = this.handleSetSelect.bind(this);
 		this.handleSetDelete = this.handleSetDelete.bind(this);
 		this.handleNeuronAdd = this.handleNeuronAdd.bind(this);
+		this.handleNeuronDelete = this.handleNeuronDelete.bind(this);
 		this.handleNeuronActivationChange = this.handleNeuronActivationChange.bind(this);
 		this.handleManipulate = this.handleManipulate.bind(this);
 	}
@@ -334,6 +338,22 @@ class ManipulationControls extends React.Component {
 			current_sets = update(current_sets, {[self.state.selectedIdx]: {$push: [response]}});
 			self.setState({sets: current_sets});	
 		}
+	}
+
+	handleNeuronDelete(neuron) {
+		let current_sets = this.state.sets
+		let current_set = current_sets[this.state.selectedIdx]
+
+		let idxToDelete = -1;
+		for (var i = current_set.length - 1; i >= 0; i--) {
+			if (current_set[i]['neuron'] == neuron) {
+				idxToDelete = i;
+				break;
+			}
+		}
+
+		current_sets = update(current_sets, {[this.state.selectedIdx]: {$splice: [[idxToDelete, 1]]}});
+		this.setState({sets: current_sets});
 	}
 
 	handleNeuronActivationChange(neuron, activation_value) {
@@ -400,7 +420,8 @@ class ManipulationControls extends React.Component {
 		if (this.state.sets[this.state.selectedIdx].length > 0 || this.props.selected_neuron != undefined) {
 			neuron_set_elements = this.state.sets[this.state.selectedIdx].map(v => <NeuronController 
 						neuron={v} 
-						onActivationChange={this.handleNeuronActivationChange}/>)
+						onActivationChange={this.handleNeuronActivationChange}
+						onDelete={this.handleNeuronDelete}/>)
 		}
 
 		let neuron_add_element = ""
@@ -740,17 +761,20 @@ class App extends React.Component {
 							</div>
 							<Button href={'/analyze?project=' + this.state.project_info.id}
 								variant="outlined"
-								color="primary">
+								color="primary"
+								style={{marginLeft: '10px'}}>
 								Neuron Analysis
 							</Button>
-							<Button onClick={() => this.handleChangeMode('ablation')}
+							<Button href={'/analyze?project=' + this.state.project_info.id}
 								variant="outlined"
-								color="primary">
+								color="primary"
+								style={{marginLeft: '10px'}}>
 								Model Ablation
 							</Button>
-							<Button href=""
+							<Button href="#"
 								variant="raised"
-								color="primary">
+								color="primary"
+								style={{marginLeft: '10px'}}>
 								Neuron Manipulation
 							</Button>
 						</div>

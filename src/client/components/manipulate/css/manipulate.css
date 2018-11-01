@@ -107,6 +107,21 @@ body {
     flex-direction: row;
     align-items: center;
     margin: 5px;
+
+    position: relative;
+}
+
+.neuron-controller-delete {
+    position: absolute;
+    font-size: 17px !important;
+    left: 94%;
+    top: 2px;
+    color: #999;
+    cursor: pointer;
+}
+
+.neuron-controller-delete:hover {
+    color: #444;
 }
 
 .slider-controller {
