@@ -260,6 +260,39 @@ def analyze():
 	except DoesNotExist:
 		return render_template('error.html')
 
+@app.route("/ablate")
+def ablate():
+	project_id = request.args.get('project')
+
+	try:
+		project = database.Project.get(database.Project.id == uuid.UUID(project_id))
+		print(project)
+		rankings = []
+		for ranking in database.Ranking.select().join(database.Project).where(database.Ranking.project == project.id):
+			rankings.append({
+				'id': ranking.id,
+				'type': ranking.type,
+				'name': ranking.name,
+				'crossModelPaths': ranking.crossModelPaths,
+				'tokensPath': ranking.tokensPath,
+				'labelsPath': ranking.labelsPath
+			})
+		project_struct = {
+			'id': project.id,
+			'projectName': project.projectName,
+			'creationDate': project.creationDate,
+			'modelPath': project.modelPath,
+			'textPath': project.textPath,
+			'mtTestPath': project.mtTestPath,
+			'mtReferencePath': project.mtReferencePath,
+			'outputStyler': project.outputStyler,
+			'rankings': rankings
+		}
+
+		return render_template('ablate.html', project_info=project_struct)
+	except DoesNotExist:
+		return render_template('error.html')
+
 @app.route("/manipulate")
 def manipulate():
 	project_id = request.args.get('project')

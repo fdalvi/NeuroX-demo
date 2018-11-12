@@ -1,0 +1,361 @@
+html {
+    font-family: Roboto;
+    font-size: 20px;
+}
+
+body {
+    margin: 0px;
+}
+
+#app {
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-height: 100vh;
+}
+
+.dark-icon {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white; 
+}
+
+/*********************************** HEADER ***********************************/
+#page-header {
+    height: 64px;
+    background-color: #eee;
+    padding: 5px 25px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+#page-header > div {
+    flex-grow: 2;
+}
+
+#page-header > Button {
+    margin: 10px;
+}
+
+#page-content {
+    display: grid;
+    grid-template-columns: repeat(10, 0.2fr);
+    grid-template-rows: repeat(8, 0.2fr);
+    grid-template-areas: 
+        "main main main main main main main main main main"
+        "main main main main main main main main main main"
+        "ablation ablation ablation ablation ablation ablation ablation ablation ranking ranking"
+        "ablation ablation ablation ablation ablation ablation ablation ablation ranking ranking"
+        "ablation ablation ablation ablation ablation ablation ablation ablation ranking ranking"
+        "ablation ablation ablation ablation ablation ablation ablation ablation ranking ranking"
+        "ablation ablation ablation ablation ablation ablation ablation ablation ranking ranking"
+        "ablation ablation ablation ablation ablation ablation ablation ablation ranking ranking";
+    justify-items: stretch;
+
+    height: calc(100vh - 80px);
+}
+
+#sentences-container {
+    grid-area: main;
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: hidden;
+}
+
+#rankings-container {
+    grid-area: ranking;
+    display: hidden;
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 15px;
+
+    overflow: scroll;
+}
+
+#ablation-results-container {
+    grid-area: ablation;
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#manipulation-controls {
+    display: flex;
+    flex-direction: row;
+
+    height: calc(100% - 54px);
+    overflow: hidden;
+}
+
+.neuron-controller {
+    width: 300px;
+    height: 65px;
+    border: 2px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px;
+
+    position: relative;
+}
+
+.neuron-controller-delete {
+    position: absolute;
+    font-size: 17px !important;
+    left: 94%;
+    top: 2px;
+    color: #999;
+    cursor: pointer;
+}
+
+.neuron-controller-delete:hover {
+    color: #444;
+}
+
+.slider-controller {
+    flex-grow: 2;
+
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+
+    align-self: center;
+}
+
+.activation-value {
+    font-family: Roboto;
+    text-align: center;
+    width: 50px;
+}
+
+@keyframes opacityPulse {
+    0% {opacity: 0.5;}
+    50% {opacity: 1.0;}
+    100% {opacity: 0.5;}
+}
+
+.pulse {
+    animation: opacityPulse 1s ease-out;
+    animation-iteration-count: infinite; 
+    opacity: 1;
+}
+
+.neuron-set {
+    flex-grow: 2;
+    
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-left: 2px solid #b5b5b5;
+    border-right: 2px solid #b5b5b5;
+    margin-bottom: 10px;
+
+    align-items: center;
+    align-content: flex-start;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow: scroll;
+
+    align-items: flex-start;
+}
+
+#neurons-container {
+    grid-area: neurons;
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: scroll;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#neuron-info-container {
+    grid-area: neuron-info;
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: scroll;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.ranking-selected {
+    background-color: #e1cbff;
+}
+
+.ranking-item {
+    font-family: Roboto;
+    font-size: 0.8rem;
+    margin: 0px 10px 0px 10px;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 10px;
+}
+
+.ranking-item:hover {
+    background-color: #eee;
+}
+
+.sub-ranking-item {
+    font-family: Roboto;
+    font-size: 0.8rem;
+    margin: 0px 10px 0px 10px;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 10px;
+
+    margin-left: 30px;
+}
+
+.sub-ranking-item:hover {
+    background-color: #eee;
+}
+
+#neuron-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden {
+    display: none;
+}
+
+#neuron-specific-info {
+    display: flex;
+    flex-direction: column;
+}
+
+
+#cloak {
+    margin-left: 25vw;
+    width: 50vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-title {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    font-size: 60px;
+}
+
+.rangeslider-horizontal {
+    height: 4px;
+}
+
+.rangeslider-horizontal .rangeslider__fill {
+    background-color: #a259ff;
+}
+
+.rangeslider-horizontal .rangeslider__handle {
+    width: 16px;
+    height: 16px;
+    border-radius: 16px;
+}
+
+.rangeslider-horizontal .rangeslider__handle:after {
+    top: 0px;
+    left: 0px;
+    background-color: #ffffff;
+}
+
+.rangeslider-horizontal .rangeslider__labels .rangeslider__label-item:before {
+    content: "";
+    /*width: 2px;
+    height: 10px;
+    background: #9447e2;*/
+    position: absolute;
+    left: 50%;
+    top: 0%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: -1;
+
+    /* triangle */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid rgb(41, 140, 0);
+}
+
+.rangeslider {
+    background: #a259ff;
+}
+
+.rangeslider__labels {
+    margin-top: 2px
+}
+
+.rangeslider__labels .rangeslider__label-item {
+    font-family: Roboto;
+    font-size: 12px;
+    line-height: 30px;
+}
+
+/* Max */
+.rangeslider-horizontal .rangeslider__labels .rangeslider__label-item:nth-child(1):before {
+    border-bottom-color: rgb(98, 90, 255);
+}
+/* Min */
+.rangeslider-horizontal .rangeslider__labels .rangeslider__label-item:nth-child(3):before {
+    border-bottom-color: rgb(255, 90, 90);
+}
+.rangeslider-horizontal .rangeslider__labels .rangeslider__label-item {
+    color: white;
+    line-height: 0px;
+    font-size: 0px;
+}
+
+.legend {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.legend-entry:before {
+    content: "";
+    width: 0.8rem;
+    height: 0.8rem;
+    position: absolute;
+    left: -25px;
+    transform: translateY(25%);
+}
+
+.legend-entry:nth-child(1):before {
+    background-color: rgb(255, 90, 90);
+
+}
+
+.legend-entry:nth-child(2):before {
+    background-color: rgb(41, 140, 0);
+    
+}
+
+.legend-entry:nth-child(3):before {
+    background-color: rgb(98, 90, 255);
+}
