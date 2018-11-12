@@ -27,6 +27,7 @@ var config = {
 	entry: {
 		index: APP_DIR + '/index/Index.jsx',
 		analyze: APP_DIR + '/analyze/Analyze.jsx',
+		ablate: APP_DIR + '/ablate/Ablate.jsx',
 		manipulate: APP_DIR + '/manipulate/Manipulate.jsx'
 	},
 	resolve: {
@@ -99,6 +100,11 @@ var config = {
 			filename: 'analyze.html',
 			template: './client/analyze.html',
 			chunks: ['vendor', 'analyze']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'ablate.html',
+			template: './client/ablate.html',
+			chunks: ['vendor', 'ablate']
 		}),
 		new HtmlWebpackPlugin({
 			filename: 'manipulate.html',
