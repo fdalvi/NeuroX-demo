@@ -461,17 +461,7 @@ class ManipulationControls extends React.Component {
 					{neuron_set_elements}
 					{neuron_add_element}
 				</div>
-				<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '10px'}}>
-					<div style={{color: '#555'}}>
-						<Typography variant="button" gutterBottom>
-							Legend
-						</Typography>
-					</div>
-					<div className="legend">
-						<div className="legend-entry"> <Typography variant="body1"> Minimum </Typography> </div>
-						<div className="legend-entry"> <Typography variant="body1"> Mean </Typography> </div>
-						<div className="legend-entry"> <Typography variant="body1"> Maximum </Typography> </div>
-					</div>
+				<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '10px', overflowY: 'scroll'}}>
 					<Button onClick={this.handleManipulate}
 						variant={"raised"}
 						color="primary"
@@ -488,6 +478,16 @@ class ManipulationControls extends React.Component {
 						<DeleteIcon />
 					</Button>
 					{this.state.manipulationInProgess?<div style={{width: '100%'}}><LinearProgress/></div>:""}
+					<div style={{color: '#555', marginTop: '10px'}}>
+						<Typography variant="button" gutterBottom>
+							Legend
+						</Typography>
+					</div>
+					<div className="legend">
+						<div className="legend-entry"> <Typography variant="body1"> Minimum </Typography> </div>
+						<div className="legend-entry"> <Typography variant="body1"> Mean </Typography> </div>
+						<div className="legend-entry"> <Typography variant="body1"> Maximum </Typography> </div>
+					</div>
 				</div>
 			</div>
 		);
@@ -729,11 +729,8 @@ class App extends React.Component {
 
 		this.state = {
 			project_info: project_info,
-			active_mode: 'manipulation',
 			ready: false
 		};
-
-		this.handleChangeMode = this.handleChangeMode.bind(this);
 	}
 
 	componentDidMount() {
@@ -754,12 +751,6 @@ class App extends React.Component {
 		}
 	}
 
-	handleChangeMode(mode) {
-		if (mode == 'analysis') 
-			window.location.href = '/analyze?project=' + this.state.project_info.id;
-		this.setState({'active_mode': mode});
-	}
-
 	render () {
 		if (this.state.ready) {
 			return (
@@ -777,7 +768,7 @@ class App extends React.Component {
 								style={{marginLeft: '10px'}}>
 								Neuron Analysis
 							</Button>
-							<Button href={'/analyze?project=' + this.state.project_info.id}
+							<Button href={'/ablate?project=' + this.state.project_info.id}
 								variant="outlined"
 								color="primary"
 								style={{marginLeft: '10px'}}>
