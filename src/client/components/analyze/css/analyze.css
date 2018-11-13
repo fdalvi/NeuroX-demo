@@ -1,3 +1,8 @@
+html {
+    font-family: Roboto;
+    font-size: 18px;
+}
+
 body {
     margin: 0px;
 }
@@ -33,7 +38,7 @@ body {
     flex-shrink: 0;
 }
 
-#page-header > h1 {
+#page-header > div {
     flex-grow: 2;
 }
 
@@ -42,39 +47,34 @@ body {
 }
 
 #page-content {
-    flex-grow: 2;
+    display: grid;
+    grid-template-columns: repeat(10, 0.2fr);
+    grid-template-rows: repeat(8, 0.2fr);
+    grid-template-areas: 
+        "main main main main main main main main ranking ranking"
+        "main main main main main main main main ranking ranking"
+        "results results results results results results results results neurons neuron-info"
+        "results results results results results results results results neurons neuron-info"
+        "results results results results results results results results neurons neuron-info"
+        "results results results results results results results results neurons neuron-info"
+        "results results results results results results results results selected-neurons selected-neurons"
+        "results results results results results results results results selected-neurons selected-neurons";
+    justify-items: stretch;
 
     height: calc(100vh - 80px);
 }
 
-#top-row {
-    display: flex;
-    flex-direction: row;
-
-    height: 30%;
-}
-
-#bottom-row {
-    display: flex;
-    flex-direction: row;
-
-    height: 70%;
-}
-
 #sentences-container {
-    width: 80%;
-    height: calc(100% - 20px);
-
+    grid-area: main;
     border: 1px solid #ccc;
     margin: 5px;
     padding: 5px;
 
-    overflow: scroll;
+    overflow: hidden;
 }
 
 #rankings-container {
-    width: 20%;
-    height: calc(100% - 20px);
+    grid-area: ranking;
 
     border: 1px solid #ccc;
     margin: 5px;
@@ -84,19 +84,15 @@ body {
 }
 
 #results-container {
-    width: 80%;
-    height: calc(100% - 20px);
+    grid-area: results;
 
     border: 1px solid #ccc;
     margin: 5px;
     padding: 5px;
-
-    overflow: scroll;
 }
 
 #neurons-container {
-    width: calc(10% - 11px);
-    height: calc(100% - 20px);
+    grid-area: neurons;
 
     border: 1px solid #ccc;
     margin: 5px;
@@ -109,8 +105,20 @@ body {
 }
 
 #neuron-info-container {
-    width: calc(10% - 11px);
-    height: calc(100% - 20px);
+    grid-area: neuron-info;
+
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+
+    overflow: scroll;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#selected-neurons-pool {
+    grid-area: selected-neurons;
 
     border: 1px solid #ccc;
     margin: 5px;
@@ -128,7 +136,7 @@ body {
 
 .ranking-item {
     font-family: Roboto;
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin: 0px 10px 0px 10px;
     border-bottom: 1px solid #ccc;
     padding: 5px 10px;
@@ -140,7 +148,7 @@ body {
 
 .sub-ranking-item {
     font-family: Roboto;
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin: 0px 10px 0px 10px;
     border-bottom: 1px solid #ccc;
     padding: 5px 10px;
@@ -155,6 +163,17 @@ body {
 #neuron-list {
     display: flex;
     flex-direction: column;
+
+    overflow: scroll;
+    height: calc(100% - 50px);
+}
+
+#neuron-pool {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    height: calc(100% - 50px);
 }
 
 .hidden {

@@ -2,24 +2,19 @@ import React from 'react';
 import {render} from 'react-dom';
 import update from 'immutability-helper';
 
-import "@material/typography/mdc-typography";
+import Typography from '@material-ui/core/Typography';
 import "./css/analyze.css";
-import "./css/vis_elements.css";
+import "../manipulate/css/vis_elements.css";
 
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import "@material/select/mdc-select";
 import {MDCSelect} from '@material/select';
 
-import "@material/linear-progress/mdc-linear-progress";
-import {MDCLinearProgress} from '@material/linear-progress';
-
-import "@material/form-field/mdc-form-field";
-import {MDCFormField} from '@material/form-field';
-import "@material/checkbox/mdc-checkbox";
-import {MDCCheckbox} from '@material/checkbox';
-
-import {Line} from "react-chartjs";
+import WrapTextIcon from '@material-ui/icons/WrapText';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 
@@ -62,7 +57,7 @@ class Sentence extends React.Component {
 	render() {
 		return (
 			<div>
-				<span style={this.props.style} className={"sentence"}>
+				<span style={this.props.style} className={"sentence " + (this.props.wrap?"wrap":"nowrap")}>
 					<span className="item-name">{this.props.name}</span>
 					{this.props.tokens.map(token => <Token token={token}/>)}
 				</span>
@@ -86,7 +81,7 @@ class SentenceMap extends React.Component {
 		} else {
 			return (
 				<div>
-					<span style={{fontFamily: 'monospace'}} className={"sentence"}>
+					<span style={{fontFamily: 'monospace'}} className={"sentence " + (this.props.wrap?"wrap":"nowrap")}>
 						<span className="item-name"> {this.props.name} </span>
 						{this.props.tokens.map(token => <Token token={token.text} activation={token.activation}/>)}
 					</span>
@@ -119,17 +114,45 @@ class NeuronList extends React.Component {
 	render() {
 		if (this.props.neurons.length == 0) {
 			return (
-				<div id="neuron-list" 
-					className="mdc-typography--body1"
+				<div id="neuron-list"
 					style={{marginLeft: '10px', color: '#555'}}>
-					Select a ranking to see the neuron ordering
+					<Typography variant="body1">
+						Select a ranking to see the neuron ordering
+					</Typography>
 				</div>
 			);
 		} else {
 			return (
 				<div id="neuron-list">
-					{this.props.neurons.map(x => <Neuron position={x} 
+					{this.props.neurons.map(x => <Neuron position={x}
 						selected={this.props.selected_neurons.indexOf(x) >= 0}
+						onClick={this.props.onNeuronClick}/>)}
+				</div>
+			);
+		}
+	}
+}
+
+class NeuronPool extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		if (this.props.neurons.length == 0) {
+			return (
+				<div id="neuron-pool"
+					style={{marginLeft: '10px', color: '#555'}}>
+					<Typography variant="body1">
+						Select a ranking to see the neuron ordering
+					</Typography>
+				</div>
+			);
+		} else {
+			return (
+				<div id="neuron-pool">
+					{this.props.neurons.map(x => <Neuron position={x}
+						selected={this.props.selected_neuron == x}
 						onClick={this.props.onNeuronClick}/>)}
 				</div>
 			);
@@ -214,7 +237,7 @@ class NeuronInformation extends React.Component {
 			<div id="neuron-list">
 				<div className={messageClassNames}
 					style={{marginLeft: '10px', color: '#555'}}>
-					Select at least one neuron
+					Select a neuron to view its information
 				</div>
 				<div style={{width: "100%"}} className={contentClassNames}>
 					<div style={{width: "100%"}} class="mdc-select mdc-select--outlined">
@@ -327,7 +350,7 @@ class ActivationsMap extends React.Component {
 								</div>
 							</div>):""
 					}
-					{sentences.map(t => <SentenceMap name={t.name} tokens={t.tokens}/>)}
+					{sentences.map(t => <SentenceMap name={t.name} tokens={t.tokens} wrap={this.props.wrap}/>)}
 				</div>
 			);
 		}
@@ -339,6 +362,8 @@ class Analysis extends React.Component {
 		super(props);
 
 		this.state = {
+			'sentence_wrap': true,
+			'results_wrap': true,
 			'sentences': [],
 			'rankings': [],
 			'selected_ranking': -1,
@@ -430,8 +455,8 @@ class Analysis extends React.Component {
 		for (var i = 0; i < this.state.sentences.length; i++) {
 			sentences.push(
 				<div style={{margin: '7px', borderBottom: '1px dashed #ccc'}}>
-					<Sentence name="source" tokens={this.state.sentences[i].source} style={{direction: 'ltr', fontFamily: 'monospace'}}/>
-					<Sentence name="translation" tokens={this.state.sentences[i].pred} style={this.props.outputStyler}/>
+					<Sentence name="source" tokens={this.state.sentences[i].source} style={{direction: 'ltr', fontFamily: 'monospace'}} wrap={this.state.sentence_wrap}/>
+					<Sentence name="translation" tokens={this.state.sentences[i].pred} style={this.props.outputStyler}  wrap={this.state.sentence_wrap}/>
 				</div>
 			)
 		}
@@ -464,361 +489,82 @@ class Analysis extends React.Component {
 		}
 		return (
 			<div id="page-content">
-				<div id="top-row">
-					<div id="sentences-container">
-						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-							className="mdc-typography--button">
-							Translations
+				<div id="sentences-container">
+					<div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+						<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem', flexGrow: '2'}}>
+							<Typography variant="button"> Translations </Typography>
 						</h1>
+						<Tooltip title="Wrap Sentences">
+							<IconButton color={this.state.sentence_wrap?"primary":""} onClick={() => this.setState({sentence_wrap: !this.state.sentence_wrap})}>
+								<WrapTextIcon/>
+							</IconButton>
+						</Tooltip>
+					</div>
+					<div style={{overflow: 'scroll', height: 'calc(100% - 50px)'}}>
 						{	this.state.loadingSentences ? (
 							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
-								<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-									<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+								<div style={{marginLeft: '15%', width: '70%'}}>
+									<LinearProgress/>
 								</div>
 							</div>):""
 						}
 						{sentences}
 					</div>
-					<div id="rankings-container">
-						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-							className="mdc-typography--button">
+				</div>
+				<div id="results-container">
+					<div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+						<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem', flexGrow: '2'}}>
+							<Typography variant="button"> Activations Map </Typography>
+						</h1>
+						<Tooltip title="Wrap Sentences">
+							<IconButton color={this.state.results_wrap?"primary":""} onClick={() => this.setState({results_wrap: !this.state.results_wrap})}>
+								<WrapTextIcon/>
+							</IconButton>
+						</Tooltip>
+					</div>
+					<ActivationsMap project_id={this.props.project_id} sentences={this.state.sentences} selected_neurons={this.state.selected_neurons} wrap={this.state.results_wrap}/>
+				</div>
+				<div id="rankings-container">
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
 							Rankings
-						</h1>
-						{	this.state.loadingRankings ? (
-							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
-								<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-									<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
-								</div>
-							</div>):""
-						}
-						{rankings}
-					</div>
+						</Typography>
+					</h1>
+					{	this.state.loadingRankings ? (
+						<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+							<div style={{marginLeft: '15%', width: '70%'}}>
+								<LinearProgress/>
+							</div>
+						</div>):""
+					}
+					{rankings}
 				</div>
-				<div id="bottom-row">
-					<div id="results-container">
-						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-							className="mdc-typography--button">
-							Activations Map
-						</h1>
-						<ActivationsMap project_id={this.props.project_id} sentences={this.state.sentences} selected_neurons={this.state.selected_neurons} />
-					</div>
-					<div id="neurons-container">
-						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-							className="mdc-typography--button">
+				<div id="neurons-container">
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
 							Neuron Ordering
-						</h1>
-						<NeuronList neurons={neurons} selected_neurons={this.state.selected_neurons} onNeuronClick={this.handleNeuronClick}/>
-					</div>
-					<div id="neuron-info-container">
-						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-							className="mdc-typography--button">
+						</Typography>
+					</h1>
+					<NeuronList neurons={neurons} selected_neurons={this.state.selected_neurons} onNeuronClick={this.handleNeuronClick}/>
+				</div>
+				<div id="neuron-info-container">
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
 							Neuron Information
-						</h1>
-						<NeuronInformation project_id={this.props.project_id} neurons={this.state.selected_neurons}/>
-					</div>
+						</Typography>
+					</h1>
+					<NeuronInformation project_id={this.props.project_id} neurons={this.state.selected_neurons}/>
 				</div>
-			</div>
-			)
-	}
-}
-
-
-class AblationResults extends React.Component {
-	constructor(props) {
-		super(props)
-		this.mockdata = [
-				{
-					label: "Cross-Model Correlation Top",
-					fillColor: "rgba(151,187,205,0.2)",
-					strokeColor: "rgba(151,187,205,1)",
-					pointColor: "rgba(151,187,205,1)",
-					pointStrokeColor: "#fff",
-					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: [34.75,19.82,16.48,14.21,11.46,10.57,9.33,8.38,7.62,6.13,5.22,4.72,4,3.6,3.55,2.9,2.52,1.98,1.93,1.6,1.36,0.69,0.47,0.49,0.14,0.09,0.06,0.04,0,0,0,0,0,0,0,0,0,0,0,0,0],
-				},
-				{
-					label: "Cross-Model Correlation Bottom",
-					fillColor: "rgba(255,255,255,0.0)",
-					strokeColor: "rgba(220,220,220,1)",
-					pointColor: "rgba(220,220,220,1)",
-					pointStrokeColor: "#fff",
-					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(220,220,220,1)",
-					data: [34.75,34.43,33.43,32.32,30.79,28.8,26.4,23.61,20.57,17.16,14.08,11.27,9.28,7.53,6.15,5.03,4.15,3.42,3.1,2.76,2.43,2.14,2.01,1.9,1.74,1.5,1.23,1.04,0.96,0.81,0.8,0.45,0.14,0.01,0,0,0,0,0,0,0]
-				},
-				{
-					label: "Task-Specific (POS) Ranking Top",
-					fillColor: "rgba(151,187,205,0.0)",
-					strokeColor: "rgba(255,137,79,1)",
-					pointColor: "rgba(255, 102, 25,1)",
-					pointStrokeColor: "#fff",
-					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(255, 102, 25	,1)",
-					data: [34.75,33.69,31.69,30.1,27.74,24.05,19.77,16.3,13.53,11.08,8.65,6.66,5.52,4.43,3.39,2.47,2.12,2.22,1.52,1.36,1.16,1.1,0.65,0.48,0.33,0.05,0.01,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-				},
-				{
-					label: "Task-Specific (SEM) Ranking Top",
-					fillColor: "rgba(151,187,205,0.0)",
-					strokeColor: "rgba(116, 200, 103,1)",
-					pointColor: "rgba(40, 201, 14,1)",
-					pointStrokeColor: "#fff",
-					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: [34.75,33.3,31.01,27.7,24.36,20.3,15.83,12.08,9.56,7.54,5.75,4.73,4,3.32,2.88,2.64,2.45,2.33,2.14,1.9,1.64,1.44,1.34,1.34,1.17,0.95,0.91,1.09,0.93,0.62,0.64,0.06,0.09,0.01,0,0,0,0,0,0,0]
-				},
-			]
-		this.chartOptions = {
-			responsive: true,
-			scales: {
-				xAxes: [{
-					scaleLabel: {
-						display: true,
-						labelString: 'Number of Ablated Neurons'
-					}
-				}],
-				yAxes: [{
-					scaleLabel: {
-						display: true,
-						labelString: 'BLEU (Translation Performance)'
-					}
-				}]
-			}
-		}
-	}
-
-	render() {
-		if (this.props.selected_rankings.length == 0) {
-			return (
-				<div
-						className="mdc-typography--body1"
-						style={{marginLeft: '10px', color: '#555'}}>
-						Select at least one ranking to visualize the ablation results
+				<div id="selected-neurons-pool">
+					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
+						<Typography variant="button">
+							Selected Neurons
+						</Typography>
+					</h1>
+					<NeuronPool neurons={neurons} selected_neuron={this.state.selected_neurons} onNeuronClick={this.handleNeuronClick}/>
 				</div>
-			);
-		} else {
-			let datasets = []
-			for (var i = 0; i < this.props.selected_rankings.length; i++) {
-				datasets.push(this.mockdata[i])
-			}
-			var data = {
-				labels : [0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500,1550,1600,1650,1700,1750,1800,1850,1900,1950,2000],
-				datasets: datasets
-			};
-			return (
-				<div class="chart-container" style={{position: 'relative', height:'50%', width:'80%'}}>
-					<Line data={data} options={this.chartOptions} redraw/>
-				</div>
-			);
-		}
-	}
-}
-
-class Checkbox extends React.Component {
-	constructor(props) {
-		super(props)
-
-		this.checkbox = undefined;
-	}
-
-	componentDidMount() {
-		this.checkbox = new MDCCheckbox(document.querySelector("#checkbox-" + this.props.id));
-		const formField = new MDCFormField(document.querySelector("#formfield-" + this.props.id));
-		formField.input = this.checkbox;
-	}
-
-	render() {
-		return (
-			<div id={"formfield-" + this.props.id} class="mdc-form-field">
-				<div id={"checkbox-" + this.props.id} class="mdc-checkbox">
-				    <input type="checkbox"
-				           class="mdc-checkbox__native-control"
-				           id={"checkbox-input-"+ this.props.id}
-				           onClick={() => this.props.onClick(this.props.id, this.checkbox.checked)}/>
-				    <div class="mdc-checkbox__background">
-				      <svg class="mdc-checkbox__checkmark"
-				           viewBox="0 0 24 24">
-				        <path class="mdc-checkbox__checkmark-path"
-				              fill="none"
-				              d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-				      </svg>
-				      <div class="mdc-checkbox__mixedmark"></div>
-				    </div>
-				  </div>
-				  <label for={"checkbox-input-"+ this.props.id}>{this.props.label}</label>
 			</div>
 		)
-	}
-}
-
-
-class Ablation extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			'sentences': [],
-			'rankings': [],
-			'selected_rankings': []
-		}
-
-		this.handleRankingSelect = this.handleRankingSelect.bind(this);
-	}
-
-	componentDidMount() {
-		let self = this;
-
-		let xhr = new XMLHttpRequest();
-		xhr.open("POST", "/getText", true);
-		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.send(JSON.stringify({
-			'project_id': this.props.project_id
-		}))
-
-		xhr.onload = function(e) {
-			let response =  JSON.parse(xhr.response);
-			let source = response['source'];
-			let pred = response['pred'];
-
-			let sentences = []
-			for (var i = 0; i < source.length; i++) {
-				sentences.push({
-					'source': source[i],
-					'pred': pred[i]
-				})
-			}
-
-			self.setState({
-				'sentences': sentences
-			})
-		}
-
-		let xhr_rankings = new XMLHttpRequest();
-		xhr_rankings.open("POST", "/getRankings", true);
-		xhr_rankings.setRequestHeader('Content-Type', 'application/json');
-		xhr_rankings.send(JSON.stringify({
-			'project_id': this.props.project_id
-		}))
-
-		xhr_rankings.onload = function(e) {
-			let response =  JSON.parse(xhr_rankings.response);
-			let flat_rankings = []
-			for (var i = 0; i < response['rankings'].length; i++) {
-				response['rankings'][i].level = 1;
-				flat_rankings.push(response['rankings'][i])
-				if (response['rankings'][i].sub_rankings != undefined) {
-					for (var j = 0; j < response['rankings'][i].sub_rankings.length; j++) {
-						response['rankings'][i].sub_rankings[j].level = 2;
-						flat_rankings.push(response['rankings'][i].sub_rankings[j])
-					}
-				}
-			}
-
-			self.setState({
-				'rankings': flat_rankings
-			})
-		}
-	}
-
-	handleRankingSelect(checkboxID, selected) {
-		let index = checkboxID.split('-')[0];
-		let direction = checkboxID.split('-')[1];
-		let selected_rankings = this.state.selected_rankings;
-		if (selected) {
-			selected_rankings = update(selected_rankings, {$push: [checkboxID]})
-		} else {
-			selected_rankings = update(selected_rankings, {$splice: [[selected_rankings.indexOf(checkboxID), 1]]});
-		}
-		this.setState({'selected_rankings': selected_rankings});
-	}
-
-	render() {
-		let sentences = [];
-
-		for (var i = 0; i < this.state.sentences.length; i++) {
-			sentences.push(
-				<div style={{margin: '7px', borderBottom: '1px dashed #ccc'}}>
-					<Sentence name="source" tokens={this.state.sentences[i].source} style={{direction: 'ltr', fontFamily: 'monospace'}}/>
-					<Sentence name="translation" tokens={this.state.sentences[i].pred} style={this.props.outputStyler}/>
-				</div>
-			)
-		}
-
-		let rankings = []
-		for (let i = 0; i < this.state.rankings.length; i++) {
-			let ranking = this.state.rankings[i];
-			let ranking_classes = ""
-
-			if (ranking.level == 1) {
-				ranking_classes += "ranking-item ";
-				if (i == this.state.selected_ranking) {
-					ranking_classes += "ranking-selected";
-				}
-
-				rankings.push(
-					<div className={ranking_classes} style={{display: 'flex', flexDirection: 'column'}}>
-						{ranking.name}
-						<span>
-							<Checkbox id={i + "-top"} label="Top" onClick={this.handleRankingSelect}/>
-							<Checkbox id={i + "-bottom"} label="Bottom" onClick={this.handleRankingSelect}/>
-						</span>
-					</div>
-				)
-			} else {
-				// Ignore subrankings for ablation
-			}
-		}
-
-		let neurons = []
-		if (this.state.selected_ranking > -1) {
-			neurons = this.state.rankings[this.state.selected_ranking].ranking;
-		}
-		return (
-			<div id="page-content">
-				<div id="top-row">
-					<div id="sentences-container" style={{width: '100%'}}>
-						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-							className="mdc-typography--button">
-							Translations
-						</h1>
-						{sentences}
-					</div>
-				</div>
-				<div id="bottom-row">
-					<div id="results-container">
-						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-							className="mdc-typography--button">
-							Ablation Results
-						</h1>
-						<div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
-						<AblationResults rankings={this.state.rankings} selected_rankings={this.state.selected_rankings}/>
-						</div>
-					</div>
-					<div id="rankings-container">
-						<h1 style={{marginLeft: '10px', padding: '0px', lineHeight: '1rem'}}
-							className="mdc-typography--button">
-							Rankings
-						</h1>
-						{rankings}
-					</div>
-				</div>
-			</div>
-			)
-	}
-}
-
-
-class Manipulation extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
-	render() {
-		return (
-			<div>
-			Manipulation
-			</div>
-			)
 	}
 }
 
@@ -828,11 +574,8 @@ class App extends React.Component {
 
 		this.state = {
 			project_info: project_info,
-			active_mode: 'analysis',
 			ready: false
 		};
-
-		this.handleChangeMode = this.handleChangeMode.bind(this);
 	}
 
 	componentDidMount() {
@@ -853,51 +596,39 @@ class App extends React.Component {
 		}
 	}
 
-	handleChangeMode(mode) {
-		if (mode == 'manipulation')
-			window.location.href = '/manipulate?project=' + this.state.project_info.id;
-		this.setState({'active_mode': mode});
-	}
-
 	render () {
 		if (this.state.ready) {
-			let main_content = <Analysis
-				project_id={this.state.project_info.id}
-				outputStyler={JSON.parse(this.state.project_info.outputStyler)} />
-
-			if (this.state.active_mode == 'ablation')
-				main_content = <Ablation
-				project_id={this.state.project_info.id}
-				outputStyler={JSON.parse(this.state.project_info.outputStyler)} />;
-			if (this.state.active_mode == 'manipulation')
-				main_content = <Manipulation
-				project_id={this.state.project_info.id}
-				outputStyler={JSON.parse(this.state.project_info.outputStyler)} />;
-
 			return (
 				<MuiThemeProvider theme={theme}>
 					<div id="container">
 						<div id="page-header">
-							<h1 className="mdc-typography--headline5">
-								{this.state.project_info.projectName}
-							</h1>
-							<Button onClick={() => this.handleChangeMode('analysis')}
-								variant={this.state.active_mode != 'analysis'?"outlined":"raised"}
-								color="primary">
+							<div>
+								<Typography component="h2" variant="h3">
+									{this.state.project_info.projectName}
+								</Typography>
+							</div>
+							<Button href="#"
+								variant="raised"
+								color="primary"
+								style={{marginLeft: '10px'}}>
 								Neuron Analysis
 							</Button>
-							<Button onClick={() => this.handleChangeMode('ablation')}
-								variant={this.state.active_mode != 'ablation'?"outlined":"raised"}
-								color="primary">
+							<Button href={'/ablate?project=' + this.state.project_info.id}
+								variant="outlined"
+								color="primary"
+								style={{marginLeft: '10px'}}>
 								Model Ablation
 							</Button>
-							<Button onClick={() => this.handleChangeMode('manipulation')}
-								variant={this.state.active_mode != 'manipulation'?"outlined":"raised"}
-								color="primary">
+							<Button href={'/manipulate?project=' + this.state.project_info.id}
+								variant="outlined"
+								color="primary"
+								style={{marginLeft: '10px'}}>
 								Neuron Manipulation
 							</Button>
 						</div>
-						{main_content}
+						<Analysis
+							project_id={this.state.project_info.id}
+							outputStyler={JSON.parse(this.state.project_info.outputStyler)} />
 					</div>
 				</MuiThemeProvider>
 			);
@@ -906,11 +637,13 @@ class App extends React.Component {
 				<MuiThemeProvider theme={theme}>
 					<div id="cloak">
 						<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>Dissection</span> </h1>
-						<div className="mdc-typography--headline6" style={{marginBottom: "30px"}}>
-							Hang on while we crunch the numbers for you...
+						<div style={{marginBottom: "30px"}}>
+							<Typography variant="h6">
+								Hang on while we crunch the numbers for you...
+							</Typography>
 						</div>
-						<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-							<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
+						<div style={{width: '70%'}}>
+							<LinearProgress/>
 						</div>
 					</div>
 				</MuiThemeProvider>
