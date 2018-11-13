@@ -116,7 +116,6 @@ class NeuronList extends React.Component {
 	render() {
 		if (this.props.neurons.length == 0) {
 			return (
-
 				<div id="neuron-list" 
 					style={{marginLeft: '10px', color: '#555'}}>
 					<Typography variant="body1">
@@ -218,7 +217,7 @@ class NeuronController extends React.Component {
 	constructor(props) {
 		super(props);
 
-  		this.handleChange = this.handleChange.bind(this);
+		this.handleChange = this.handleChange.bind(this);
 	}
 
 	handleChange(value) {
@@ -232,22 +231,22 @@ class NeuronController extends React.Component {
 						onClick={(e) => {}}/>
 				<div className="slider-controller">
 					<Slider
-	          			value={this.props.neuron['activation']}
-	          			onChange={this.handleChange}
-	          			min={-1}
-	          			max={1}
-	          			step={0.1}
-	          			labels={{
-	          				[this.props.neuron['mean']]: 'mean',
-	          				[this.props.neuron['min']]: 'min',
-	          				[this.props.neuron['max']]: 'max'
-	          			}}
-	          			tooltip={false}
-	        		/>
-        		</div>
-        		<span className="activation-value">
-        			{this.props.neuron['activation'].toFixed(1)}
-        		</span>
+						value={this.props.neuron['activation']}
+						onChange={this.handleChange}
+						min={-1}
+						max={1}
+						step={0.1}
+						labels={{
+							[this.props.neuron['mean']]: 'mean',
+							[this.props.neuron['min']]: 'min',
+							[this.props.neuron['max']]: 'max'
+						}}
+						tooltip={false}
+					/>
+				</div>
+				<span className="activation-value">
+					{this.props.neuron['activation'].toFixed(1)}
+				</span>
 				<DeleteForeverRoundedIcon
 					className="neuron-controller-delete"
 					onClick={() => this.props.onDelete(this.props.neuron['neuron'])}/>
@@ -270,7 +269,7 @@ class NeuronAdder extends React.Component {
 						onClick={(e) => {}}/>
 				<div style={{fontFamily: 'Roboto', fontSize: '0.8rem', textAlign: 'center', alignSelf: 'center'}}>
 					Click to add neuron to set
-        		</div>
+				</div>
 			</div>
 		);
 	}
@@ -388,8 +387,8 @@ class ManipulationControls extends React.Component {
 		xhr.open("POST", "/getModifiedTranslation", true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.send(JSON.stringify({
-		  	'project_id': project_info['id'],
-		  	'neurons': neurons_to_modify
+			'project_id': project_info['id'],
+			'neurons': neurons_to_modify
 		}))
 		xhr.onload = function(e) {
 			self.setState({manipulationInProgess: false});
@@ -574,7 +573,7 @@ class Manipulation extends React.Component {
 		xhr_modifier.open("POST", "/startModifiedTranslation", true);
 		xhr_modifier.setRequestHeader('Content-Type', 'application/json');
 		xhr_modifier.send(JSON.stringify({
-		    'project_id': project_info['id']
+			'project_id': project_info['id']
 		}))
 	}
 
@@ -658,11 +657,11 @@ class Manipulation extends React.Component {
 						<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem', flexGrow: '2'}}>
 							<Typography variant="button"> Translations </Typography>
 						</h1>
-				        <Tooltip title="Wrap Sentences">
-				        	<IconButton color={this.state.wrap?"primary":""} onClick={() => this.setState({wrap: !this.state.wrap})}>
-				        		<WrapTextIcon/>
-				        	</IconButton>
-				        </Tooltip>
+						<Tooltip title="Wrap Sentences">
+							<IconButton color={this.state.wrap?"primary":""} onClick={() => this.setState({wrap: !this.state.wrap})}>
+								<WrapTextIcon/>
+							</IconButton>
+						</Tooltip>
 					</div>
 					<div style={{overflow: 'scroll', height: 'calc(100% - 50px)'}}>
 						{	this.state.loadingSentences ? (
