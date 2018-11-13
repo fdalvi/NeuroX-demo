@@ -10,13 +10,14 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import "@material/select/mdc-select";
-import {MDCSelect} from '@material/select';
-
 import WrapTextIcon from '@material-ui/icons/WrapText';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import AddIcon from '@material-ui/icons/Add'
+
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
+
+import Neuron from '../neuron/Neuron'
 
 const theme = createMuiTheme({
 	palette: {
@@ -91,30 +92,31 @@ class SentenceMap extends React.Component {
 	}
 }
 
-class Neuron extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
-	render() {
-		return (
-			<span className={"neuron" + (this.props.selected?" neuron-selected":"")} onClick={() => this.props.onClick(this.props.position)}>
-				<span> neuron </span>
-				{this.props.position}
-			</span>
-		);
-	}
-}
-
 class NeuronList extends React.Component {
 	constructor(props) {
 		super(props);
 	}
 
+	getAddFunction(pool, neuron, cb) {
+		if (pool.indexOf(neuron) >= 0) {
+			return undefined
+		} else {
+			return cb
+		}
+	}
+
+	getDeleteFunction(pool, neuron, cb) {
+		if (pool.indexOf(neuron) >= 0) {
+			return cb
+		} else {
+			return undefined
+		}
+	}
+
 	render() {
 		if (this.props.neurons.length == 0) {
 			return (
-				<div id="neuron-list"
+				<div id="neuron-list" 
 					style={{marginLeft: '10px', color: '#555'}}>
 					<Typography variant="body1">
 						Select a ranking to see the neuron ordering
@@ -124,9 +126,11 @@ class NeuronList extends React.Component {
 		} else {
 			return (
 				<div id="neuron-list">
-					{this.props.neurons.map(x => <Neuron position={x}
-						selected={this.props.selected_neurons.indexOf(x) >= 0}
-						onClick={this.props.onNeuronClick}/>)}
+					{this.props.neurons.map(x => <Neuron position={x} 
+						selected={this.props.selected_neuron === x}
+						onClick={this.props.onNeuronClick}
+						onAdd={this.getAddFunction(this.props.selected_neurons_pool, x, this.props.onNeuronAction)}
+						onDelete={this.getDeleteFunction(this.props.selected_neurons_pool, x, this.props.onNeuronAction)}/>)}
 				</div>
 			);
 		}
@@ -143,8 +147,10 @@ class NeuronPool extends React.Component {
 			return (
 				<div id="neuron-pool"
 					style={{marginLeft: '10px', color: '#555'}}>
-					<Typography variant="body1">
-						Select a ranking to see the neuron ordering
+					<Typography variant="body1" style={{display: 'flex', alignItems: 'center'}}>
+						Select a neuron from an ordering using the
+						<span className={"neuron-add-icon"} aria-label="Add neuron to set"> <AddIcon /> </span>
+						button
 					</Typography>
 				</div>
 			);
@@ -153,7 +159,8 @@ class NeuronPool extends React.Component {
 				<div id="neuron-pool">
 					{this.props.neurons.map(x => <Neuron position={x}
 						selected={this.props.selected_neuron == x}
-						onClick={this.props.onNeuronClick}/>)}
+						onClick={this.props.onNeuronClick}
+						onDelete={this.props.onNeuronAction}/>)}
 				</div>
 			);
 		}
@@ -165,11 +172,8 @@ class NeuronInformation extends React.Component {
 		super(props);
 
 		this.state = {
-			selectedIdx: 0,
 			neuron_information: undefined
 		};
-
-		this.select = undefined;
 
 		this.loadNeuronInformation = this.loadNeuronInformation.bind(this);
 	}
@@ -192,28 +196,18 @@ class NeuronInformation extends React.Component {
 		}
 	}
 
-	componentDidMount() {
-		let self = this;
-		this.select = new MDCSelect(document.querySelector('.mdc-select'));
-		this.select.listen('change', () => this.loadNeuronInformation(this.props.project_id, self.props.neurons[self.select.value]));
-	}
-
 	componentDidUpdate(prevProps) {
-		if (this.props.neurons !== prevProps.neurons) {
-			let neuron = this.props.neurons[this.select.value];
-			if (neuron != undefined) {
-				if (this.state.neuron_information != undefined &&
-					neuron != this.state.neuron_information.neuron) {
-					this.loadNeuronInformation(this.props.project_id, neuron)
-				}
+		if (this.props.neuron !== prevProps.neuron) {
+			if (this.props.neuron != undefined) {
+				this.loadNeuronInformation(this.props.project_id, this.props.neuron)
 			}
 		}
 	}
 
 	render() {
-		let messageClassNames = "mdc-typography--body1"
+		let messageClassNames = ""
 		let contentClassNames = ""
-		if (this.props.neurons.length == 0) {
+		if (this.props.neuron == undefined) {
 			contentClassNames = "hidden";
 		} else {
 			messageClassNames = "hidden";
@@ -223,12 +217,14 @@ class NeuronInformation extends React.Component {
 		let neuron_information= this.state.neuron_information;
 		if (neuron_information != undefined) {
 			information_div = <div id="neuron-specific-info">
-				<span className="mdc-typography--caption"> Mean: </span>
-				<span className="mdc-typography--body1">{Number.parseFloat(neuron_information.mean).toFixed(3)} </span>
-				<span className="mdc-typography--caption"> Standard Deviation: </span>
-				<span className="mdc-typography--body1"> {Number.parseFloat(neuron_information.std).toFixed(3)} </span>
+				<Typography variant="caption"> Neuron #: </Typography>
+				<Typography variant="body1" gutterBottom> {neuron_information.neuron} </Typography>
+				<Typography variant="caption"> Mean: </Typography>
+				<Typography variant="body1" gutterBottom> {Number.parseFloat(neuron_information.mean).toFixed(3)} </Typography>
+				<Typography variant="caption"> Standard Deviation: </Typography>
+				<Typography variant="body1" gutterBottom>  {Number.parseFloat(neuron_information.std).toFixed(3)} </Typography>
 
-				<span className="mdc-typography--caption"> Top words: </span>
+				<Typography variant="caption"> Top words: </Typography>
 				{neuron_information.top_words.map(x => <Token token={x.token} activation={x.activation}/>)}
 			</div>
 		}
@@ -237,20 +233,11 @@ class NeuronInformation extends React.Component {
 			<div id="neuron-list">
 				<div className={messageClassNames}
 					style={{marginLeft: '10px', color: '#555'}}>
-					Select a neuron to view its information
+					<Typography variant="body1">
+						Choose at least one neuron
+					</Typography>
 				</div>
 				<div style={{width: "100%"}} className={contentClassNames}>
-					<div style={{width: "100%"}} class="mdc-select mdc-select--outlined">
-						<select class="mdc-select__native-control">
-							<option value="" disabled selected></option>
-							{this.props.neurons.map((x,idx) => <option value={idx}>Neuron {x}</option>)}
-						</select>
-						<label class="mdc-floating-label">Choose a Neuron</label>
-						<div class="mdc-notched-outline">
-							<svg> <path class="mdc-notched-outline__path"></path> </svg>
-						</div>
-						<div class="mdc-notched-outline__idle"></div>
-					</div>
 					{information_div}
 				</div>
 			</div>
@@ -367,13 +354,15 @@ class Analysis extends React.Component {
 			'sentences': [],
 			'rankings': [],
 			'selected_ranking': -1,
-			'selected_neurons': [],
+			'current_selected_neuron': undefined,
+			'selected_neurons_pool': [],
 			'loadingSentences': true,
 			'loadingRankings': true
 		}
 
 		this.handleRankingSelect = this.handleRankingSelect.bind(this);
 		this.handleNeuronClick = this.handleNeuronClick.bind(this);
+		this.handleNeuronAction = this.handleNeuronAction.bind(this);
 	}
 
 	componentDidMount() {
@@ -437,7 +426,16 @@ class Analysis extends React.Component {
 	}
 
 	handleNeuronClick(neuron) {
-		let selected_neurons = this.state.selected_neurons;
+		if (neuron === this.state.current_selected_neuron) {
+			this.setState({'current_selected_neuron': undefined});
+		}
+		else {
+			this.setState({'current_selected_neuron': neuron});
+		}
+	}
+
+	handleNeuronAction(neuron) {
+		let selected_neurons = this.state.selected_neurons_pool;
 		const index = selected_neurons.indexOf(neuron);
 		let new_selected_neurons = null
 		if (index >= 0) {
@@ -446,7 +444,7 @@ class Analysis extends React.Component {
 			new_selected_neurons = update(selected_neurons, {$push: [neuron]});
 		}
 		
-		this.setState({'selected_neurons': new_selected_neurons});
+		this.setState({'selected_neurons_pool': new_selected_neurons});
 	}
 
 	render() {
@@ -522,7 +520,7 @@ class Analysis extends React.Component {
 							</IconButton>
 						</Tooltip>
 					</div>
-					<ActivationsMap project_id={this.props.project_id} sentences={this.state.sentences} selected_neurons={this.state.selected_neurons} wrap={this.state.results_wrap}/>
+					<ActivationsMap project_id={this.props.project_id} sentences={this.state.sentences} selected_neurons={this.state.selected_neurons_pool} wrap={this.state.results_wrap}/>
 				</div>
 				<div id="rankings-container">
 					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
@@ -545,7 +543,12 @@ class Analysis extends React.Component {
 							Neuron Ordering
 						</Typography>
 					</h1>
-					<NeuronList neurons={neurons} selected_neurons={this.state.selected_neurons} onNeuronClick={this.handleNeuronClick}/>
+					<NeuronList
+						neurons={neurons}
+						selected_neuron={this.state.current_selected_neuron}
+						selected_neurons_pool={this.state.selected_neurons_pool}
+						onNeuronClick={this.handleNeuronClick}
+						onNeuronAction={this.handleNeuronAction}/>
 				</div>
 				<div id="neuron-info-container">
 					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
@@ -553,7 +556,7 @@ class Analysis extends React.Component {
 							Neuron Information
 						</Typography>
 					</h1>
-					<NeuronInformation project_id={this.props.project_id} neurons={this.state.selected_neurons}/>
+					<NeuronInformation project_id={this.props.project_id} neuron={this.state.current_selected_neuron}/>
 				</div>
 				<div id="selected-neurons-pool">
 					<h1 style={{margin: '10px', padding: '0px', lineHeight: '1.5rem'}}>
@@ -561,7 +564,11 @@ class Analysis extends React.Component {
 							Selected Neurons
 						</Typography>
 					</h1>
-					<NeuronPool neurons={neurons} selected_neuron={this.state.selected_neurons} onNeuronClick={this.handleNeuronClick}/>
+					<NeuronPool
+						neurons={this.state.selected_neurons_pool}
+						selected_neuron={this.state.current_selected_neuron}
+						onNeuronClick={this.handleNeuronClick}
+						onNeuronAction={this.handleNeuronAction}/>
 				</div>
 			</div>
 		)
