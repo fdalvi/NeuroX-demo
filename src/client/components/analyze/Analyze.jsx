@@ -116,7 +116,7 @@ class NeuronList extends React.Component {
 	render() {
 		if (this.props.neurons.length == 0) {
 			return (
-				<div id="neuron-list" 
+				<div id="neuron-list"
 					style={{marginLeft: '10px', color: '#555'}}>
 					<Typography variant="body1">
 						Select a ranking to see the neuron ordering
@@ -126,7 +126,7 @@ class NeuronList extends React.Component {
 		} else {
 			return (
 				<div id="neuron-list">
-					{this.props.neurons.map(x => <Neuron position={x} 
+					{this.props.neurons.map(x => <Neuron position={x}
 						selected={this.props.selected_neuron === x}
 						onClick={this.props.onNeuronClick}
 						onAdd={this.getAddFunction(this.props.selected_neurons_pool, x, this.props.onNeuronAction)}
@@ -295,15 +295,17 @@ class ActivationsMap extends React.Component {
 		if (processed_neurons.length == 0) {
 			return (
 				<div id="neuron-list" 
-					className="mdc-typography--body1"
 					style={{marginLeft: '10px', color: '#555'}}>
-					Select at least one neuron to visualize the activations of those neurons
+					<Typography variant="body1">
+						Select at least one neuron to visualize its activations
+					</Typography>
+
 					{this.state.loadingActivations ? (
-							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
-								<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-									<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
-								</div>
-							</div>):""
+						<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+							<div style={{marginLeft: '15%', width: '70%'}}>
+								<LinearProgress/>
+							</div>
+						</div>):""
 					}
 				</div>
 			);
@@ -331,11 +333,11 @@ class ActivationsMap extends React.Component {
 			return (
 				<div id="neuron-list">
 					{this.state.loadingActivations ? (
-							<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
-								<div id="progressbar" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-									<div class="mdc-linear-progress__buffering-dots"></div><div class="mdc-linear-progress__buffer"></div><div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"><span class="mdc-linear-progress__bar-inner"></span></div><div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"><span class="mdc-linear-progress__bar-inner"></span></div>
-								</div>
-							</div>):""
+						<div style={{height: '80%', display:'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+							<div style={{marginLeft: '15%', width: '70%'}}>
+								<LinearProgress/>
+							</div>
+						</div>):""
 					}
 					{sentences.map(t => <SentenceMap name={t.name} tokens={t.tokens} wrap={this.props.wrap}/>)}
 				</div>
