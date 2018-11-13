@@ -26,11 +26,11 @@
     "@material/ripple": "^0.39.3",
     "@material/select": "^0.39.3",
     "@material/typography": "^0.39.0",
-    "chart.js": "^1.1.1",
+    "chart.js": "^2.7.3",
     "immutability-helper": "^2.8.1",
     "react": "^16.5.1",
     "react-addons-css-transition-group": "^15.6.2",
-    "react-chartjs": "^1.2.0",
+    "react-chartjs-2": "^2.7.4",
     "react-dom": "^16.5.1",
     "react-rangeslider": "^2.2.0",
     "remove": "^0.1.5"
