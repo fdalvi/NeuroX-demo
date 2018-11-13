@@ -1,6 +1,6 @@
 [submodule "src/external/opennmt-inspection"]
 	path = src/external/opennmt-inspection
-	url = https://github.com/dabbler0/opennmt-inspection.git
+	url = git@github.com:fdalvi/opennmt-inspection.git
 [submodule "src/external/aux_classifier"]
 	path = src/external/aux_classifier
 	url = git@github.com:fdalvi/aux_classifier.git
