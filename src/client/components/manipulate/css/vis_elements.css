@@ -37,30 +37,3 @@
 	font-family: monospace;
 	font-size: 0.7rem;
 }
-
-.neuron {
-	font-family: monospace;
-	font-size: 0.7rem;
-	padding: 6px;
-	display: inline-block;
-	white-space: nowrap;
-
-	width: 100px;
-}
-
-.neuron-selected {
-	background-color: #d1d2ff;
-}
-
-.neuron > span {
-	background-color: #f4f4f4;
-	color: #999;
-	padding: 6px 1px;
-	display: inline-block;
-	min-width: 60px;
-	text-align: center;
-	white-space: pre;
-	margin-right: 4px;
-
-	font-family: monospace;
-}

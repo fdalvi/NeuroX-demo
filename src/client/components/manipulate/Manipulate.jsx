@@ -28,6 +28,8 @@ import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 import WrapTextIcon from '@material-ui/icons/WrapText';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import Neuron from '../neuron/Neuron'
+
 const theme = createMuiTheme({
 	palette: {
 		primary: {
@@ -89,21 +91,6 @@ class DiffSentence extends React.Component {
 					{this.props.tokens.map(token_info => <Token token={token_info[0]} activation={token_info[1]}/>)}
 				</span>
 			</div>
-		);
-	}
-}
-
-class Neuron extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
-	render() {
-		return (
-			<span className={"neuron" + (this.props.selected?" neuron-selected":"")} onClick={() => this.props.onClick(this.props.position)}>
-				<span> neuron </span>
-				{this.props.position}
-			</span>
 		);
 	}
 }

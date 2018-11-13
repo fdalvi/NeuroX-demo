@@ -1,0 +1,51 @@
+.neuron {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	font-family: monospace;
+	font-size: 0.7rem;
+	padding: 6px;
+	white-space: nowrap;
+
+	min-width: 100px;
+	min-height: 30px;
+}
+
+.neuron-selected {
+	background-color: #d1d2ff;
+}
+
+.neuron:hover {
+	background-color: #e1e2ff;
+}
+
+.neuron > .label {
+	background-color: #f4f4f4;
+	color: #999;
+	padding: 6px 1px;
+	display: inline-block;
+	min-width: 60px;
+	text-align: center;
+	white-space: pre;
+	margin-right: 4px;
+
+	font-family: monospace;
+
+	min-height: 18px;
+}
+
+.neuron > .action-icon {
+	background-color: #e6e6e6;
+	width: 30px;
+	height: 30px;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+.neuron > .action-icon:hover {
+	background-color: #a6a6a6;
+}
