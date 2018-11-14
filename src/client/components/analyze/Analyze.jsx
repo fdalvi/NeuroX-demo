@@ -645,7 +645,7 @@ class App extends React.Component {
 			return (
 				<MuiThemeProvider theme={theme}>
 					<div id="cloak">
-						<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>Dissection</span> </h1>
+						<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>X</span> </h1>
 						<div style={{marginBottom: "30px"}}>
 							<Typography variant="h6">
 								Hang on while we crunch the numbers for you...

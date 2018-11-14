@@ -5,7 +5,7 @@ import datetime
 import uuid
 
 # Connect to local database
-db = SqliteExtDatabase('neurodissection.db', pragmas=(
+db = SqliteExtDatabase('NeuroX.db', pragmas=(
     ('cache_size', -1024 * 64),  # 64MB page-cache.
     ('journal_mode', 'wal'),  # Use WAL-mode (you should always use this!).
     ('foreign_keys', 1))  # Enforce foreign-key constraints.

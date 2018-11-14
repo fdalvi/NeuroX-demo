@@ -808,7 +808,7 @@ class App extends React.Component {
 			<MuiThemeProvider theme={theme}>
 				<div id="container">
 					<div id="page-header">
-						<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>Dissection</span> </h1>
+						<h1 className="page-title"> <span style={{color: "#bb4848"}}>Neuro</span><span>X</span> </h1>
 					</div>
 					<div id="page-content">
 						<div id="existing-projects">

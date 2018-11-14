@@ -1,5 +1,5 @@
 {
-  "name": "neurodissection",
+  "name": "neurox",
   "version": "0.1.0",
   "description": "Toolkit for neuron level analysis in deep neural networks",
   "main": "app.js",
