@@ -7,15 +7,14 @@
 Coming soon...
 
 ### TODO
+#### Short-term todos:
+- [ ] Restructuring for better modularity
+- [x] DB for backend
+- [ ] Client side caching for requests
+- [x] Computation queue on the backend
+- [ ] Interaction with classifier/correlation/translation modules
+- [x] Manipulation UI
 
-Short-term todos:
-[ ] Restructuring for better modularity
-[x] DB for backend
-[ ] Client side caching for requests
-[x] Computation queue on the backend
-[ ] Interaction with classifier/correlation/translation modules
-[x] Manipulation UI
-
-Long-term todos:
-[ ] BPE/Char/Segmented support
-[ ] General model support
+#### Long-term todos:
+- [ ] BPE/Char/Segmented support
+- [ ] General model support
