@@ -116,13 +116,14 @@ class AblationResults extends React.Component {
 		}
 	}
 
-	createDataset(label, data) {
+	createDataset(label, data, color) {
 		return {
 					label: label,
-					borderColor: "rgba(116, 200, 103,1)",
-					pointBackgroundColor: "rgba(40, 201, 14,1)",
+					borderColor: color,
+					backgroundColor: color,
 					fill: false,
-					pointBorderColor: "#fff",
+					pointBackgroundColor: color,
+					pointBorderColor: color,
 					pointRadius: 5,
 					pointHoverRadius: 7,
 					data: data
@@ -134,6 +135,12 @@ class AblationResults extends React.Component {
 	}
 
 	render() {
+		let colors = [
+			["rgba(116, 200, 103, 1)", "rgba(116, 200, 103, 0.5)"],
+			["rgba(255, 137,  79, 1)", "rgba(255, 137,  79, 0.5)"],
+			["rgba(246, 237,  47, 1)", "rgba(246, 237,  47, 0.5)"],
+			["rgba(151, 187, 205, 1)", "rgba(151, 187, 205, 0.5)"]
+		]
 		if (this.props.selected_rankings.length == 0) {
 			return (
 				<div style={{marginLeft: '10px', color: '#555'}}>
@@ -144,10 +151,14 @@ class AblationResults extends React.Component {
 			let datasets = []
 			for (var i = 0; i < this.props.selected_rankings.length; i++) {
 				if (this.props.selected_rankings[i][0]) {
-					datasets.push(this.createDataset("ranking_" + i + ' top-to-bottom', this.props.rankings[i].forward_ablation_results))	
+					datasets.push(this.createDataset(this.props.rankings[i].name + ' Top-to-Bottom',
+									this.props.rankings[i].forward_ablation_results,
+									colors[i % colors.length][0]))
 				}
 				if (this.props.selected_rankings[i][1]) {
-					datasets.push(this.createDataset("ranking_" + i + ' bottom-to-top', this.props.rankings[i].backward_ablation_results))	
+					datasets.push(this.createDataset(this.props.rankings[i].name + ' Bottom-to-Top',
+									this.props.rankings[i].backward_ablation_results,
+									colors[i % colors.length][1]))
 				}
 				
 			}

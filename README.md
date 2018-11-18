@@ -1,5 +1,4 @@
-# NeuroX
-## Toolkit for finding and analyzing neurons in neural networks
+# NeuroX: Toolkit for finding and analyzing neurons in neural networks
 
 ![demo picure](docs/en-ar-NeuroX.png)
 
