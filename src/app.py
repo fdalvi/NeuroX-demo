@@ -512,4 +512,4 @@ def get_modified_translation():
 if __name__ == "__main__":
 	mp.set_start_method('spawn')
 	db = database.init()
-	app.run(host="0.0.0.0", port="5000", debug=True)
+	app.run(host="0.0.0.0", port="5001", debug=True)
