@@ -147,7 +147,7 @@ class NeuronPool extends React.Component {
 			return (
 				<div id="neuron-pool"
 					style={{marginLeft: '10px', color: '#555'}}>
-					<Typography variant="body1" style={{display: 'flex', alignItems: 'center'}}>
+					<Typography variant="body1" style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
 						Select a neuron from an ordering using the
 						<span className={"neuron-add-icon"} aria-label="Add neuron to set"> <AddIcon /> </span>
 						button

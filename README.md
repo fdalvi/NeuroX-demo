@@ -114,9 +114,10 @@ Please see the links below for details behind each method and how the rankings
 are actually computed.
 
 ### Links
-[1] AAAI'19 Publication: [What Is One Grain of Sand in the Desert? Analyzing Individual Neurons in Deep NLP Models](http://www.aaai.org/Papers/AAAI/2019/AAAI-DalviF.5894.pdf)
-[2] ICLR'19 Publication: [Identifying And Controlling Important Neurons In Neural Machine Translation](https://openreview.net/pdf?id=H1z-PsR5KX)
-[3] AAAI'19 Demonstration: [NeuroX: A Toolkit for Analyzing Individual Neurons in Neural Networks](https://arxiv.org/pdf/1812.09359.pdf)
+- [1] AAAI'19 Publication: [What Is One Grain of Sand in the Desert? Analyzing Individual Neurons in Deep NLP Models](http://www.aaai.org/Papers/AAAI/2019/AAAI-DalviF.5894.pdf)
+- [2] ICLR'19 Publication: [Identifying And Controlling Important Neurons In Neural Machine Translation](https://openreview.net/pdf?id=H1z-PsR5KX)
+- [3] Modified [OpenNMT-py toolkit](https://github.com/fdalvi/opennmt-inspection) to train the models that are to be analyzed
+- [4] AAAI'19 Demonstration: [NeuroX: A Toolkit for Analyzing Individual Neurons in Neural Networks](https://arxiv.org/pdf/1812.09359.pdf)
 
 ### TODO
 #### Short-term todos:
