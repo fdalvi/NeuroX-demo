@@ -26,6 +26,21 @@ be used as Jupyter Notebooks are used - a server is launched (either on your
 local machine or on a more powerful server), and the application is then
 accessible using a URL.
 
+#### Docker Image
+If you wish to just try out the toolkit with a pre-trained model, a docker image
+is available with all of the required dependencies. Run the following to automatically
+download and run the server, after which you can follow steps 5-8 under
+[Running the Server](README.md#running-the-server):
+
+```bash
+docker run -p 5001:5001 --rm fdalvi/neurox:v1
+```
+
+#### Pre-requisites
+1. Conda installation (Ananconda/Miniconda)
+2. Python 3
+3. Node v10
+
 #### Running the server:
 1. Getting the code:
 ```bash
@@ -41,7 +56,14 @@ conda env create -f conda-environment.yml -n neurox-env
 source activate neurox-env
 ```
 
-3. Running the server:
+3. Building the frontend:
+```bash
+cd src
+npm install
+npm run build
+```
+
+4. Running the server:
 ```bash
 python app.py
 ```
@@ -50,10 +72,10 @@ The server will be up and running on the localhost at port `5001`. You can set
 any environment variables such as `CUDA_VISBLE_DEVICES` or `CUDA_CACHE_PATH` and
 they will be used for the computation that will be done later.
 
-4. Accessing the toolkit: Visit `http://localhost:5001` or 
+5. Accessing the toolkit: Visit `http://localhost:5001` or 
 `http://<server-ip>:5001`
 
-5. (a) Starting a new project:
+6. (a) Starting a new project:
 ![start screen](docs/NeuroX-start-screen.png)
 Fill in the required details to start a new project. You will need to provide
 the path to a OpenNMT-py model _trained using 
@@ -66,10 +88,10 @@ rankings dialog on the right (See section
 [Rankings Overview](https://github.com/fdalvi/NeuroX/blob/master/README.md#rankings-overview)
  for an explanation of the various ranking schemes).
 
-5. (b) Loading an existing project: Just select the project from the sidebar to
+6. (b) Loading an existing project: Just select the project from the sidebar to
 see it's details and load an existing project.
 
-6. Waiting for Computation: Depending on the number of rankings and the size of
+7. Waiting for Computation: Depending on the number of rankings and the size of
 your models/test data, it will take a while to compute all of the information 
 required to analyze the neurons. You will see a loading screen while this is 
 taking place:
@@ -83,7 +105,7 @@ significantly faster on a GPU. All of the computation for a project is done
 once and cached, and hence you can leave the page and come back to it later and 
 all of the results will be available instantaneously.
 
-7. Perform your analysis! The toolkit provides three major _views_:
+8. Perform your analysis! The toolkit provides three major _views_:
 	- The **Analysis view** allows you to view the various rankings, select 
 	multiple neurons to see their activation maps on the input data, and look
 	at statistics for individual neurons such as their top words. 
