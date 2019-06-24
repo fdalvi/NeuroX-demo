@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --progress -p --watch"
+    "dev": "webpack --progress -p --watch",
+    "build": "webpack --progress -p"
   },
   "author": "Fahim Dalvi",
   "license": "ISC",

@@ -459,7 +459,7 @@ def get_neuron_stats():
 def manipulate_and_translate(request_q, reply_q, model_path, text_path):
 	from online_translator_v2 import init_model, translate
 
-	translator = init_model(model_path, use_gpu=True)
+	translator = init_model(model_path, use_gpu=torch.cuda.is_available())
 	print("Model Loading complete...")
 
 	sentences = []
