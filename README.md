@@ -1,4 +1,9 @@
-# NeuroX
+# NeuroX-GUI
+
+> **Notice:** The GUI is currently not functionally because of some underlying
+changes and outdated dependencies. We hope to fix this in the upcoming weeks.
+Feel free to use the [toolkit](https://github.com/fdalvi/NeuroX) in the
+meantime to access the same functionality through a python API.
 
 ### Toolkit for finding and analyzing _important_ neurons in neural networks
 NeuroX is a comprehensive toolkit based on explainable AI research published in
