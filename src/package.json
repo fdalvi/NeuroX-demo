@@ -23,20 +23,20 @@
     "react-rangeslider": "^2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.0",
+    "@babel/core": "^7.20.7",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.2",
+    "babel-loader": "^8.3.0",
     "clean-webpack-plugin": "^0.1.19",
-    "css-loader": "^1.0.0",
-    "html-webpack-plugin": "^3.2.0",
+    "css-loader": "^6.7.3",
+    "html-webpack-plugin": "^5.5.0",
     "less": "^3.8.1",
-    "less-loader": "^4.1.0",
+    "less-loader": "^11.1.0",
     "node-sass": "^4.9.3",
-    "sass-loader": "^7.1.0",
-    "style-loader": "^0.23.0",
-    "webpack": "^4.19.0",
+    "sass-loader": "^13.2.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.75.0",
     "webpack-bundle-analyzer": "^3.0.2",
-    "webpack-cli": "^3.1.0"
+    "webpack-cli": "^5.0.1"
   }
 }
